@@ -703,12 +703,65 @@ dtb-$(CONFIG_ARCH_TEGRA_3x_SOC) += \
 dtb-$(CONFIG_ARCH_TEGRA_114_SOC) += \
 	tegra114-dalmore.dtb \
 	tegra114-roth.dtb \
-	tegra114-tn7.dtb
+	tegra114-tn7.dtb \
+	tegra114-pluto.dtb
 dtb-$(CONFIG_ARCH_TEGRA_124_SOC) += \
-	tegra124-jetson-tk1.dtb \
-	tegra124-nyan-big.dtb \
-	tegra124-nyan-blaze.dtb \
-	tegra124-venice2.dtb
+	tegra124-ardbeg-e1792-1100-a00-00.dtb \
+	tegra124-ardbeg-e1792-1100-a00-01.dtb \
+	tegra124-ardbeg-e1780-1000-a00-00.dtb \
+	tegra124-ardbeg-e1780-1000-a00-01.dtb \
+	tegra124-ardbeg-e1780-1000-a03-00.dtb \
+	tegra124-ardbeg-e1780-1000-a03-01.dtb \
+	tegra124-ardbeg-e1780-1000-a03-00-powerconfig.dtb \
+	tegra124-ardbeg-e1780-1000-a03-00-sata.dtb \
+	tegra124-ardbeg-p1859.dtb \
+	tegra124-ardbeg-p1859-vm_1.dtb \
+	tegra124-android-p1859.dtb \
+	tegra124-android-p1859-vm_1.dtb \
+	tegra124-ardbeg-p1859-hdmiprimary.dtb \
+	tegra124-android-p1889.dtb \
+	tegra124-laguna.dtb \
+	tegra124-laguna-pm358.dtb \
+	tegra124-jetson_tk1-pm375-000-c00-00.dtb \
+	tegra124-norrin-pm374-0001-a00-00.dtb \
+	tegra124-norrin-pm374-0001-a01-00.dtb \
+	tegra124-loki.dtb \
+	tegra124-loki-02-cell-battery.dtb \
+	tegra124-loki-03-cell-battery.dtb \
+	tegra124-loki-e2548-a00.dtb \
+	tegra124-loki-e2530-a00.dtb \
+	tegra124-loki-e2530-a01.dtb \
+	tegra124-loki-e2530-a03.dtb \
+	tegra124-loki-p2530-0000-c00-00.dtb \
+	tegra124-loki-p2530-0001-a03-00.dtb \
+	tegra124-loki-p2530-0100-c00-00.dtb \
+	tegra124-loki-mods.dtb \
+	tegra124-loki-foster.dtb \
+	tegra124-loki-foster-p2530-0900-c00-00.dtb \
+	tegra124-loki-fosterhdd-p2530-0900-a01-00.dtb \
+	tegra124-loki-fosterhdd-p2530-0900-c00-00.dtb \
+	tegra124-thor195.dtb \
+	tegra124-loki-thor195-e2549-a00.dtb \
+	tegra124-tn8-e1780-1100-a02-01.dtb \
+	tegra124-tn8-e1780-1100-a02.dtb \
+	tegra124-tn8-e1780-1100-a03-01.dtb \
+	tegra124-tn8-e1780-1100-a03.dtb \
+	tegra124-tn8-e1784-1100-a00.dtb \
+	tegra124-tn8-e1784-1101-a00.dtb \
+	tegra124-tn8-e1784-1101-a00-01.dtb \
+	tegra124-tn8-e1922-1100-a00.dtb \
+	tegra124-tn8-p1761-1270-a00.dtb \
+	tegra124-tn8-p1761-1270-a02.dtb \
+	tegra124-tn8-p1761-1270-a03.dtb \
+	tegra124-tn8-p1761-1270-a04-e.dtb \
+	tegra124-tn8-p1761-1270-a04-e-nobattery.dtb \
+	tegra124-tn8-p1761-1470-a00.dtb \
+	tegra124-e1782_sku1100.dtb \
+	tegra124-e1791.dtb \
+	tegra124-e1923.dtb \
+	tegra124-p1859.dtb \
+	tegra124-p1889.dtb \
+	tegra124-p2360.dtb
 dtb-$(CONFIG_ARCH_U300) += \
 	ste-u300.dtb
 dtb-$(CONFIG_ARCH_U8500) += \

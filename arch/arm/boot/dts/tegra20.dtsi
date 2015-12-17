@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 #include <dt-bindings/clock/tegra20-car.h>
 #include <dt-bindings/gpio/tegra-gpio.h>
 #include <dt-bindings/pinctrl/pinctrl-tegra.h>
@@ -8,6 +26,14 @@
 / {
 	compatible = "nvidia,tegra20";
 	interrupt-parent = <&lic>;
+
+	aliases {
+		serial0 = &uarta;
+		serial1 = &uartb;
+		serial2 = &uartc;
+		serial3 = &uartd;
+		serial4 = &uarte;
+	};
 
 	host1x@50000000 {
 		compatible = "nvidia,tegra20-host1x", "simple-bus";
@@ -142,20 +168,20 @@
 
 	timer@50040600 {
 		compatible = "arm,cortex-a9-twd-timer";
-		interrupt-parent = <&intc>;
+		interrupt-parent = <&gic>;
 		reg = <0x50040600 0x20>;
 		interrupts = <GIC_PPI 13
 			(GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
 		clocks = <&tegra_car TEGRA20_CLK_TWD>;
 	};
 
-	intc: interrupt-controller@50041000 {
+	gic: interrupt-controller@50041000 {
 		compatible = "arm,cortex-a9-gic";
 		reg = <0x50041000 0x1000
 		       0x50040100 0x0100>;
 		interrupt-controller;
 		#interrupt-cells = <3>;
-		interrupt-parent = <&intc>;
+		interrupt-parent = <&gic>;
 	};
 
 	cache-controller@50043000 {
@@ -175,7 +201,7 @@
 		      <0x60004300 0x50>;
 		interrupt-controller;
 		#interrupt-cells = <3>;
-		interrupt-parent = <&intc>;
+		interrupt-parent = <&gic>;
 	};
 
 	timer@60005000 {
@@ -413,6 +439,7 @@
 		compatible = "nvidia,tegra20-sflash";
 		reg = <0x7000c380 0x80>;
 		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+		nvidia,dma-request-selector = <&apbdma 11>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		clocks = <&tegra_car TEGRA20_CLK_SPI>;
@@ -475,6 +502,7 @@
 		compatible = "nvidia,tegra20-slink";
 		reg = <0x7000d400 0x200>;
 		interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+		nvidia,dma-request-selector = <&apbdma 15>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		clocks = <&tegra_car TEGRA20_CLK_SBC1>;
@@ -489,6 +517,7 @@
 		compatible = "nvidia,tegra20-slink";
 		reg = <0x7000d600 0x200>;
 		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+		nvidia,dma-request-selector = <&apbdma 16>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		clocks = <&tegra_car TEGRA20_CLK_SBC2>;
@@ -503,6 +532,7 @@
 		compatible = "nvidia,tegra20-slink";
 		reg = <0x7000d800 0x200>;
 		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+		nvidia,dma-request-selector = <&apbdma 17>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		clocks = <&tegra_car TEGRA20_CLK_SBC3>;
@@ -517,6 +547,7 @@
 		compatible = "nvidia,tegra20-slink";
 		reg = <0x7000da00 0x200>;
 		interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
+		nvidia,dma-request-selector = <&apbdma 18>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		clocks = <&tegra_car TEGRA20_CLK_SBC4>;
@@ -544,20 +575,20 @@
 		clock-names = "pclk", "clk32k_in";
 	};
 
-	memory-controller@7000f000 {
+	mc: memory-controller@7000f000 {
 		compatible = "nvidia,tegra20-mc";
 		reg = <0x7000f000 0x024
 		       0x7000f03c 0x3c4>;
 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
 	};
 
-	iommu@7000f024 {
+    iommu: memory-controller@7000f024 {
 		compatible = "nvidia,tegra20-gart";
 		reg = <0x7000f024 0x00000018	/* controller registers */
 		       0x58000000 0x02000000>;	/* GART aperture */
 	};
 
-	memory-controller@7000f400 {
+	emc: memory-controller@7000f400 {
 		compatible = "nvidia,tegra20-emc";
 		reg = <0x7000f400 0x200>;
 		#address-cells = <1>;
@@ -586,7 +617,7 @@
 
 		#interrupt-cells = <1>;
 		interrupt-map-mask = <0 0 0 0>;
-		interrupt-map = <0 0 0 0 &intc GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-map = <0 0 0 0 &gic GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
 
 		bus-range = <0x00 0xff>;
 		#address-cells = <3>;

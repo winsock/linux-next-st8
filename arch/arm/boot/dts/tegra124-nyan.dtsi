@@ -3,8 +3,8 @@
 
 / {
 	aliases {
-		rtc0 = "/i2c@0,7000d000/pmic@40";
-		rtc1 = "/rtc@0,7000e000";
+		rtc0 = "/i2c@7000d000/pmic@40";
+		rtc1 = "/rtc@7000e000";
 		serial0 = &uarta;
 	};
 
@@ -12,8 +12,8 @@
 		reg = <0x0 0x80000000 0x0 0x80000000>;
 	};
 
-	host1x@0,50000000 {
-		hdmi@0,54280000 {
+	host1x@50000000 {
+		hdmi@54280000 {
 			status = "okay";
 
 			vdd-supply = <&vdd_3v3_hdmi>;
@@ -25,29 +25,29 @@
 				<&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>;
 		};
 
-		sor@0,54540000 {
+		sor@54540000 {
 			status = "okay";
 
 			nvidia,dpaux = <&dpaux>;
 			nvidia,panel = <&panel>;
 		};
 
-		dpaux@0,545c0000 {
+		dpaux@545c0000 {
 			vdd-supply = <&vdd_3v3_panel>;
 			status = "okay";
 		};
 	};
 
-	serial@0,70006000 {
+	serial@70006000 {
 		/* Debug connector on the bottom of the board near SD card. */
 		status = "okay";
 	};
 
-	pwm@0,7000a000 {
+	pwm@7000a000 {
 		status = "okay";
 	};
 
-	i2c@0,7000c000 {
+	i2c@7000c000 {
 		status = "okay";
 		clock-frequency = <100000>;
 
@@ -68,7 +68,7 @@
 		};
 	};
 
-	i2c@0,7000c400 {
+	i2c@7000c400 {
 		status = "okay";
 		clock-frequency = <100000>;
 
@@ -81,7 +81,7 @@
 		};
 	};
 
-	i2c@0,7000c500 {
+	i2c@7000c500 {
 		status = "okay";
 		clock-frequency = <400000>;
 
@@ -91,12 +91,12 @@
 		};
 	};
 
-	hdmi_ddc: i2c@0,7000c700 {
+	hdmi_ddc: i2c@7000c700 {
 		status = "okay";
 		clock-frequency = <100000>;
 	};
 
-	i2c@0,7000d000 {
+	i2c@7000d000 {
 		status = "okay";
 		clock-frequency = <400000>;
 
@@ -297,7 +297,7 @@
 		};
 	};
 
-	spi@0,7000d400 {
+	spi@7000d400 {
 		status = "okay";
 
 		cros_ec: cros-ec@0 {
@@ -338,7 +338,7 @@
 		};
 	};
 
-	spi@0,7000da00 {
+	spi@7000da00 {
 		status = "okay";
 		spi-max-frequency = <25000000>;
 
@@ -349,7 +349,7 @@
 		};
 	};
 
-	pmc@0,7000e400 {
+	pmc@7000e400 {
 		nvidia,invert-interrupt;
 		nvidia,suspend-mode = <0>;
 		nvidia,cpu-pwr-good-time = <500>;
@@ -360,7 +360,7 @@
 		nvidia,sys-clock-req-active-high;
 	};
 
-	hda@0,70030000 {
+	hda@70030000 {
 		status = "okay";
 	};
 
@@ -370,7 +370,7 @@
 		reset-gpios = <&gpio TEGRA_GPIO(X, 7) GPIO_ACTIVE_LOW>;
 	};
 
-	sdhci@0,700b0000 { /* WiFi/BT on this bus */
+	sdhci@700b0000 { /* WiFi/BT on this bus */
 		status = "okay";
 		bus-width = <4>;
 		no-1-8-v;
@@ -381,7 +381,7 @@
 		keep-power-in-suspend;
 	};
 
-	sdhci@0,700b0400 { /* SD Card on this bus */
+	sdhci@700b0400 { /* SD Card on this bus */
 		status = "okay";
 		cd-gpios = <&gpio TEGRA_GPIO(V, 2) GPIO_ACTIVE_LOW>;
 		power-gpios = <&gpio TEGRA_GPIO(R, 0) GPIO_ACTIVE_HIGH>;
@@ -390,7 +390,7 @@
 		vqmmc-supply = <&vddio_sdmmc3>;
 	};
 
-	sdhci@0,700b0600 { /* eMMC on this bus */
+	sdhci@700b0600 { /* eMMC on this bus */
 		status = "okay";
 		bus-width = <8>;
 		no-1-8-v;
@@ -398,41 +398,41 @@
 	};
 
 	/* CPU DFLL clock */
-	clock@0,70110000 {
+	clock@70110000 {
 		status = "okay";
 		vdd-cpu-supply = <&vdd_cpu>;
 		nvidia,i2c-fs-rate = <400000>;
 	};
 
-	ahub@0,70300000 {
-		i2s@0,70301100 {
+	ahub@70300000 {
+		i2s@70301100 {
 			status = "okay";
 		};
 	};
 
-	usb@0,7d000000 { /* Rear external USB port. */
+	usb@7d000000 { /* Rear external USB port. */
 		status = "okay";
 	};
 
-	usb-phy@0,7d000000 {
+	usb-phy@7d000000 {
 		status = "okay";
 		vbus-supply = <&vdd_usb1_vbus>;
 	};
 
-	usb@0,7d004000 { /* Internal webcam. */
+	usb@7d004000 { /* Internal webcam. */
 		status = "okay";
 	};
 
-	usb-phy@0,7d004000 {
+	usb-phy@7d004000 {
 		status = "okay";
 		vbus-supply = <&vdd_run_cam>;
 	};
 
-	usb@0,7d008000 { /* Left external USB port. */
+	usb@7d008000 { /* Left external USB port. */
 		status = "okay";
 	};
 
-	usb-phy@0,7d008000 {
+	usb-phy@7d008000 {
 		status = "okay";
 		vbus-supply = <&vdd_usb3_vbus>;
 	};
