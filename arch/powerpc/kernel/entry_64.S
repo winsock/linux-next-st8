@@ -223,7 +223,11 @@ END_FTR_SECTION_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
 
 	beq-	1f
 	ACCOUNT_CPU_USER_EXIT(r11, r12)
-	HMT_MEDIUM_LOW_HAS_PPR
+
+BEGIN_FTR_SECTION
+	HMT_MEDIUM_LOW
+END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+
 	ld	r13,GPR13(r1)	/* only restore r13 if returning to usermode */
 1:	ld	r2,GPR2(r1)
 	ld	r1,GPR1(r1)
@@ -312,7 +316,13 @@ syscall_exit_work:
 	subi	r12,r12,TI_FLAGS
 
 4:	/* Anything else left to do? */
-	SET_DEFAULT_THREAD_PPR(r3, r10)		/* Set thread.ppr = 3 */
+BEGIN_FTR_SECTION
+	lis	r3,INIT_PPR@highest	/* Set thread.ppr = 3 */
+	ld	r10,PACACURRENT(r13)
+	sldi	r3,r3,32	/* bits 11-13 are used for ppr */
+	std	r3,TASKTHREADPPR(r10)
+END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+
 	andi.	r0,r9,(_TIF_SYSCALL_DOTRACE|_TIF_SINGLESTEP)
 	beq	ret_from_except_lite
 

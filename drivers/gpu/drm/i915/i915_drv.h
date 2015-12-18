@@ -458,6 +458,7 @@ struct intel_opregion {
 	u32 swsci_gbda_sub_functions;
 	u32 swsci_sbcb_sub_functions;
 	struct opregion_asle *asle;
+	void *rvda;
 	const void *vbt;
 	u32 vbt_size;
 	u32 *lid_state;
@@ -1604,6 +1605,8 @@ struct skl_wm_level {
  * For more, read the Documentation/power/runtime_pm.txt.
  */
 struct i915_runtime_pm {
+	atomic_t wakeref_count;
+	atomic_t atomic_seq;
 	bool suspended;
 	bool irqs_enabled;
 };
@@ -2891,6 +2894,7 @@ i915_gem_object_ggtt_pin(struct drm_i915_gem_object *obj,
 
 int i915_vma_bind(struct i915_vma *vma, enum i915_cache_level cache_level,
 		  u32 flags);
+void __i915_vma_set_map_and_fenceable(struct i915_vma *vma);
 int __must_check i915_vma_unbind(struct i915_vma *vma);
 /*
  * BEWARE: Do not use the function below unless you can _absolutely_

@@ -31,7 +31,7 @@ USB_GADGET_COMPOSITE_OPTIONS();
 static struct usb_device_descriptor usbg_device_desc = {
 	.bLength =		sizeof(usbg_device_desc),
 	.bDescriptorType =	USB_DT_DEVICE,
-	.bcdUSB =		cpu_to_le16(0x0200),
+	/* .bcdUSB = DYNAMIC */
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.idVendor =		cpu_to_le16(UAS_VENDOR_ID),
 	.idProduct =		cpu_to_le16(UAS_PRODUCT_ID),

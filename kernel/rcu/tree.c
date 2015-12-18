@@ -1083,13 +1083,12 @@ static int dyntick_save_progress_counter(struct rcu_data *rdp,
 	rcu_sysidle_check_cpu(rdp, isidle, maxj);
 	if ((rdp->dynticks_snap & 0x1) == 0) {
 		trace_rcu_fqs(rdp->rsp->name, rdp->gpnum, rdp->cpu, TPS("dti"));
-		return 1;
-	} else {
 		if (ULONG_CMP_LT(READ_ONCE(rdp->gpnum) + ULONG_MAX / 4,
 				 rdp->mynode->gpnum))
 			WRITE_ONCE(rdp->gpwrap, true);
-		return 0;
+		return 1;
 	}
+	return 0;
 }
 
 /*
@@ -1173,14 +1172,15 @@ static int rcu_implicit_dynticks_qs(struct rcu_data *rdp,
 			smp_mb(); /* ->cond_resched_completed before *rcrmp. */
 			WRITE_ONCE(*rcrmp,
 				   READ_ONCE(*rcrmp) + rdp->rsp->flavor_mask);
-			resched_cpu(rdp->cpu);  /* Force CPU into scheduler. */
-			rdp->rsp->jiffies_resched += 5; /* Enable beating. */
-		} else if (ULONG_CMP_GE(jiffies, rdp->rsp->jiffies_resched)) {
-			/* Time to beat on that CPU again! */
-			resched_cpu(rdp->cpu);  /* Force CPU into scheduler. */
-			rdp->rsp->jiffies_resched += 5; /* Re-enable beating. */
 		}
+		rdp->rsp->jiffies_resched += 5; /* Re-enable beating. */
 	}
+
+	/* And if it has been a really long time, kick the CPU as well. */
+	if (ULONG_CMP_GE(jiffies,
+			 rdp->rsp->gp_start + 2 * jiffies_till_sched_qs) ||
+	    ULONG_CMP_GE(jiffies, rdp->rsp->gp_start + jiffies_till_sched_qs))
+		resched_cpu(rdp->cpu);  /* Force CPU into scheduler. */
 
 	return 0;
 }
@@ -2658,6 +2658,10 @@ static void rcu_cleanup_dead_cpu(int cpu, struct rcu_state *rsp)
 	WARN_ONCE(rdp->qlen != 0 || rdp->nxtlist != NULL,
 		  "rcu_cleanup_dead_cpu: Callbacks on offline CPU %d: qlen=%lu, nxtlist=%p\n",
 		  cpu, rdp->qlen, rdp->nxtlist);
+
+	/* Horrible debug hack for stalled grace-period kthreads post-v4.1. */
+	if (rsp->gp_kthread)
+		wake_up_process(rsp->gp_kthread);
 }
 
 /*

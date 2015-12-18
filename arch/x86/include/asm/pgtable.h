@@ -164,7 +164,13 @@ static inline int pmd_large(pmd_t pte)
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 static inline int pmd_trans_huge(pmd_t pmd)
 {
-	return pmd_val(pmd) & _PAGE_PSE;
+	return (pmd_val(pmd) & (_PAGE_PSE|_PAGE_DEVMAP)) == _PAGE_PSE;
+}
+
+#define pmd_devmap pmd_devmap
+static inline int pmd_devmap(pmd_t pmd)
+{
+	return !!(pmd_val(pmd) & _PAGE_DEVMAP);
 }
 
 static inline int has_transparent_hugepage(void)
@@ -247,6 +253,11 @@ static inline pte_t pte_mkspecial(pte_t pte)
 	return pte_set_flags(pte, _PAGE_SPECIAL);
 }
 
+static inline pte_t pte_mkdevmap(pte_t pte)
+{
+	return pte_set_flags(pte, _PAGE_SPECIAL|_PAGE_DEVMAP);
+}
+
 static inline pmd_t pmd_set_flags(pmd_t pmd, pmdval_t set)
 {
 	pmdval_t v = native_pmd_val(pmd);
@@ -279,6 +290,11 @@ static inline pmd_t pmd_wrprotect(pmd_t pmd)
 static inline pmd_t pmd_mkdirty(pmd_t pmd)
 {
 	return pmd_set_flags(pmd, _PAGE_DIRTY | _PAGE_SOFT_DIRTY);
+}
+
+static inline pmd_t pmd_mkdevmap(pmd_t pmd)
+{
+	return pmd_set_flags(pmd, _PAGE_DEVMAP);
 }
 
 static inline pmd_t pmd_mkhuge(pmd_t pmd)
@@ -348,12 +364,14 @@ static inline pgprotval_t massage_pgprot(pgprot_t pgprot)
 	return protval;
 }
 
+#define pfn_pte pfn_pte
 static inline pte_t pfn_pte(unsigned long page_nr, pgprot_t pgprot)
 {
 	return __pte(((phys_addr_t)page_nr << PAGE_SHIFT) |
 		     massage_pgprot(pgprot));
 }
 
+#define pfn_pmd pfn_pmd
 static inline pmd_t pfn_pmd(unsigned long page_nr, pgprot_t pgprot)
 {
 	return __pmd(((phys_addr_t)page_nr << PAGE_SHIFT) |
@@ -460,6 +478,12 @@ static inline int pte_same(pte_t a, pte_t b)
 static inline int pte_present(pte_t a)
 {
 	return pte_flags(a) & (_PAGE_PRESENT | _PAGE_PROTNONE);
+}
+
+#define pte_devmap pte_devmap
+static inline int pte_devmap(pte_t a)
+{
+	return (pte_flags(a) & _PAGE_DEVMAP) == _PAGE_DEVMAP;
 }
 
 #define pte_accessible pte_accessible

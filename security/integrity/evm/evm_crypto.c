@@ -42,9 +42,9 @@ static unsigned long evm_set_key_flags;
  * @key: pointer to a buffer with the key data
  * @size: length of the key data
  *
- * This function allows to set EVM HMAC key from the kernel
- * without using key subsystem 'encrypted' keys. It can be used
- * by the crypto HW kernel module which has own way of managing
+ * This function allows setting the EVM HMAC key from the kernel
+ * without using the "encrypted" key subsystem keys. It can be used
+ * by the crypto HW kernel module which has its own way of managing
  * keys.
  *
  * key length should be between 32 and 128 bytes long

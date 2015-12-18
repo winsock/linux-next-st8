@@ -785,14 +785,12 @@ static unsigned char swap_entry_free(struct swap_info_struct *p,
 			count--;
 	}
 
-	if (!count)
-		mem_cgroup_uncharge_swap(entry);
-
 	usage = count | has_cache;
 	p->swap_map[offset] = usage;
 
 	/* free if no reference */
 	if (!usage) {
+		mem_cgroup_uncharge_swap(entry);
 		dec_cluster_info_page(p, p->cluster_info, offset);
 		if (offset < p->lowest_bit)
 			p->lowest_bit = offset;
@@ -1008,7 +1006,7 @@ int free_swap_and_cache(swp_entry_t entry)
 		 * Also recheck PageSwapCache now page is locked (above).
 		 */
 		if (PageSwapCache(page) && !PageWriteback(page) &&
-				(!page_mapped(page) || vm_swap_full())) {
+		    (!page_mapped(page) || mem_cgroup_swap_full(page))) {
 			delete_from_swap_cache(page);
 			SetPageDirty(page);
 		}
@@ -2957,11 +2955,10 @@ static void free_swap_count_continuations(struct swap_info_struct *si)
 		struct page *head;
 		head = vmalloc_to_page(si->swap_map + offset);
 		if (page_private(head)) {
-			struct list_head *this, *next;
-			list_for_each_safe(this, next, &head->lru) {
-				struct page *page;
-				page = list_entry(this, struct page, lru);
-				list_del(this);
+			struct page *page, *next;
+
+			list_for_each_entry_safe(page, next, &head->lru, lru) {
+				list_del(&page->lru);
 				__free_page(page);
 			}
 		}
