@@ -109,7 +109,7 @@
 		interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>, /* syncpt */
 			     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>; /* general */
 		clocks = <&tegra_car TEGRA124_CLK_HOST1X>;
-		resets = <&tegra_car 28>;
+		resets = <&tegra_car TEGRA124_CLK_HOST1X>;
 		reset-names = "host1x";
 
 		#address-cells = <2>;

@@ -762,7 +762,8 @@ dtb-$(CONFIG_ARCH_TEGRA_124_SOC) += \
 	tegra124-e1923.dtb \
 	tegra124-p1859.dtb \
 	tegra124-p1889.dtb \
-	tegra124-p2360.dtb
+	tegra124-p2360.dtb \
+	tegra124-st8.dtb
 dtb-$(CONFIG_ARCH_U300) += \
 	ste-u300.dtb
 dtb-$(CONFIG_ARCH_U8500) += \
