@@ -857,8 +857,8 @@
 			    "rx6", "tx6", "rx7", "tx7", "rx8", "tx8",
 			    "rx9", "tx9";
 		ranges;
-		#address-cells = <1>;
-		#size-cells = <1>;
+		#address-cells = <2>;
+		#size-cells = <2>;
 
 		tegra_i2s0: i2s@70301000 {
 			compatible = "nvidia,tegra124-i2s";

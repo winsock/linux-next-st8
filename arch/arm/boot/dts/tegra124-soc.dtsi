@@ -731,7 +731,7 @@
 		};
 	};
 
-	gk20a {
+    gpu: gk20a@57000000 {
 		compatible = "nvidia,tegra124-gk20a";
 		nvidia,host1x = <&host1x>;
 		reg = <0x0 0x57000000 0x0 0x01000000>,
