@@ -79,6 +79,15 @@ config AD7280
 	  To compile this driver as a module, choose M here: the
 	  module will be called ad7280a
 
+config AS3722_ADC_EXTCON
+	tristate "AS3722 General Purpose ADC with EXTCON"
+	depends on MFD_AS3722
+	depends on EXTCON
+	help
+	 AS3722 AMS chip is used in smartphones and tablets which supports a
+	 two channel ADC. Support the continuous mode of scanning and
+	 notification through extcon.
+
 config LPC32XX_ADC
 	tristate "NXP LPC32XX ADC"
 	depends on ARCH_LPC32XX || COMPILE_TEST
