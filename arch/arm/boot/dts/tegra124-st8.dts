@@ -1,6 +1,7 @@
 /dts-v1/;
 
 #include "tegra124-tn8.dtsi"
+#include "tegra124-platforms/tegra124-tn8-pmic-e1936-1000-a00.dtsi"
 #include "tegra124-platforms/tegra124-tn8-emc-p1761-1270-a00.dtsi"
 #include "tegra124-platforms/tegra124-tn8-power-tree-e1936-1000-a00.dtsi"
 #include "tegra124-platforms/tegra124-tn8-sensor-p1761-1270-a03.dtsi"
@@ -17,139 +18,139 @@
 #include <dt-bindings/iio/meter/ina3221x.h>
 
 / {
-	model = "NVIDIA SHIELD Tablet";
-	compatible = "nvidia,st8", "nvidia,tegra124";
-
-	aliases {
-		rtc0 = "/i2c@0,7000d000/pmic@40";
-		rtc1 = "/rtc@0,7000e000";
+    model = "NVIDIA SHIELD Tablet";
+    compatible = "nvidia,st8", "nvidia,tegra124";
+    
+    aliases {
+        rtc0 = "/i2c@0,7000d000/pmic@40";
+        rtc1 = "/rtc@0,7000e000";
         display0 = &lcddc;
         display1 = &hdmidc;
-	};
-
-	chosen {
-		bootargs = "tegraid=40.0.0.00.00 console=tty1 gpt fbcon=rotate:2 video=tegrafb earlyprintk clk_ignore_unused";
-		linux,initrd-start = <0x81680000>;
-		linux,initrd-end = <0x82800000>;
-        stdout-path = &framebuffer0;
-	};
-    
-    framebuffer0: framebuffer@ad012000 {
-        compatible = "simple-framebuffer";
-        reg = <0x0 0xad012000 0x0 (1216 * 1920 * 4)>;
-        width = <1200>;
-        height = <1920>;
-        stride = <(1216 * 4)>;
-        format = "a8b8g8r8";
-        display = <&lcddc>;
     };
-
-	memory {
-		reg = <0x0 0x80000000 0x0 0x2d000000
-		       0x0 0xae000000 0x0 0x30000000>;
-	};
+    
+    chosen {
+        bootargs = "tegraid=40.0.0.00.00 console=tty1 gpt fbcon=rotate:2 video=tegrafb earlyprintk clk_ignore_unused";
+        linux,initrd-start = <0x81680000>;
+        linux,initrd-end = <0x82800000>;
+        stdout-path = &framebuffer0;
+    };
+    
+framebuffer0: framebuffer@ad012000 {
+    compatible = "simple-framebuffer";
+    reg = <0x0 0xad012000 0x0 (1216 * 1920 * 4)>;
+    width = <1200>;
+    height = <1920>;
+    stride = <(1216 * 4)>;
+    format = "a8b8g8r8";
+    display = <&lcddc>;
+};
+    
+    memory {
+        reg = <0x0 0x80000000 0x0 0x2d000000
+        0x0 0xae000000 0x0 0x30000000>;
+    };
     
     host1x@50000000 {
         /* tegradc.0 */
-        lcddc: dc@54200000 {
-            status = "okay";
-            compatible = "nvidia,tegra124-dc";
-            reg = <0x54200000 0x00040000>;
-            interrupts = <0 73 0x04>;
-            nvidia,memory-clients = <2>;
-            nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
-            nvidia,emc-clk-rate = <204000000>;
-            nvidia,cmu-enable = <1>;
-            nvidia,low-v-win = <0x2>;
-            nvidia,out-type = <TEGRA_DC_OUT_DSI>;
-            nvidia,fb-bpp = <32>; /* bits per pixel */
-            nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
-        };
+    lcddc: dc@54200000 {
+        status = "okay";
+        compatible = "nvidia,tegra124-dc";
+        reg = <0x54200000 0x00040000>;
+        interrupts = <0 73 0x04>;
+        nvidia,memory-clients = <2>;
+        nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
+        nvidia,emc-clk-rate = <204000000>;
+        nvidia,cmu-enable = <1>;
+        nvidia,low-v-win = <0x2>;
+        nvidia,out-type = <TEGRA_DC_OUT_DSI>;
+        nvidia,fb-bpp = <32>; /* bits per pixel */
+        nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
+    };
         
         /* tegradc.1 */
-        hdmidc: dc@54240000 {
-            status = "okay";
-            compatible = "nvidia,tegra124-dc";
-            reg = <0x54240000 0x00040000>;
-            interrupts = <0 74 0x04>;
-            nvidia,memory-clients = <3>;
-            nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
-            nvidia,emc-clk-rate = <300000000>;
-            nvidia,out-type = <TEGRA_DC_OUT_HDMI>;
-            nvidia,fb-bpp = <32>; /* bits per pixel */
-            nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
-        };
+    hdmidc: dc@54240000 {
+        status = "okay";
+        compatible = "nvidia,tegra124-dc";
+        reg = <0x54240000 0x00040000>;
+        interrupts = <0 74 0x04>;
+        nvidia,memory-clients = <3>;
+        nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
+        nvidia,emc-clk-rate = <300000000>;
+        nvidia,out-type = <TEGRA_DC_OUT_HDMI>;
+        nvidia,fb-bpp = <32>; /* bits per pixel */
+        nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
+    };
         
-        hdmidsi: hdmi@54280000 {
+    hdmidsi: hdmi@54280000 {
+        status = "okay";
+        compatible = "nvidia,tegra124-hdmi";
+        hdmi-display {
             status = "okay";
-            compatible = "nvidia,tegra124-hdmi";
-            hdmi-display {
-                status = "okay";
-                disp-default-out {
-                    nvidia,out-flags = <TEGRA_DC_OUT_HOTPLUG_HIGH>;
-                    nvidia,out-parent-clk = "pll_d2";
-                    nvidia,out-max-pixclk = <3367>; /* KHZ2PICOS(297000) */
-                    nvidia,out-align = <TEGRA_DC_ALIGN_MSB>;
-                    nvidia,out-order = <TEGRA_DC_ORDER_RED_BLUE>;
-                    nvidia,out-xres = <1920>;
-                    nvidia,out-yres = <1080>;
-                };
-            };
-        };
-        
-        lcddsi: dsi@54300000 {
-            status = "okay";
-            compatible = "nvidia,tegra124-dsi";
-            reg = <0x54300000 0x00040000>,
-                <0x54400000 0x00040000>;
-            nvidia,dsi-controller-vs = <DSI_VS_1>;
             disp-default-out {
-                nvidia,dsi-dpd-pads = <DSIC_DPD_EN DSID_DPD_EN>;
-                nvidia,dsi-boardinfo = <1761 0 0 1>;
-                nvidia,panel-rst-gpio = <&gpio TEGRA_GPIO(N, 4) 0>; // PN4
-                nvidia,panel-bl-pwm-gpio = <&gpio TEGRA_GPIO(H, 1) 0>; // PH1
-                disp-default-out {
-                    nvidia,out-rotation = <180>;
+                nvidia,out-flags = <TEGRA_DC_OUT_HOTPLUG_HIGH>;
+                nvidia,out-parent-clk = "pll_d2";
+                nvidia,out-max-pixclk = <3367>; /* KHZ2PICOS(297000) */
+                nvidia,out-align = <TEGRA_DC_ALIGN_MSB>;
+                nvidia,out-order = <TEGRA_DC_ORDER_RED_BLUE>;
+                nvidia,out-xres = <1920>;
+                nvidia,out-yres = <1080>;
+            };
+        };
+    };
+        
+    lcddsi: dsi@54300000 {
+        status = "okay";
+        compatible = "nvidia,tegra124-dsi";
+        reg = <0x54300000 0x00040000>,
+        <0x54400000 0x00040000>;
+        nvidia,dsi-controller-vs = <DSI_VS_1>;
+        disp-default-out {
+            nvidia,dsi-dpd-pads = <DSIC_DPD_EN DSID_DPD_EN>;
+            nvidia,dsi-boardinfo = <1761 0 0 1>;
+            nvidia,panel-rst-gpio = <&gpio TEGRA_GPIO(N, 4) 0>; // PN4
+            nvidia,panel-bl-pwm-gpio = <&gpio TEGRA_GPIO(H, 1) 0>; // PH1
+            disp-default-out {
+                nvidia,out-rotation = <180>;
+            };
+        };
+        panel-a-wuxga-8-0@0 {
+            status = "okay";
+            compatible = "a,wuxga-8-0";
+            disp-default-out {
+                nvidia,out-type = <TEGRA_DC_OUT_DSI>;
+                nvidia,out-width = <107>;
+                nvidia,out-height = <172>;
+                nvidia,out-flags = <TEGRA_DC_OUT_CONTINUOUS_MODE>;
+                nvidia,out-parent-clk = "pll_d_out0";
+                nvidia,out-xres = <1200>;
+                nvidia,out-yres = <1920>;
+            };
+            display-timings {
+                1200x1920-32 {
+                    clock-frequency = <155774400>;
+                    hactive = <1200>;
+                    vactive = <1920>;
+                    hfront-porch = <64>;
+                    hback-porch = <54>;
+                    hsync-len = <10>;
+                    vfront-porch = <3>;
+                    vback-porch = <30>;
+                    vsync-len = <2>;
+                    nvidia,h-ref-to-sync = <4>;
+                    nvidia,v-ref-to-sync = <1>;
                 };
             };
-            panel-a-wuxga-8-0@0 {
+            smartdimmer {
                 status = "okay";
-                compatible = "a,wuxga-8-0";
-                disp-default-out {
-                    nvidia,out-type = <TEGRA_DC_OUT_DSI>;
-                    nvidia,out-width = <107>;
-                    nvidia,out-height = <172>;
-                    nvidia,out-flags = <TEGRA_DC_OUT_CONTINUOUS_MODE>;
-                    nvidia,out-parent-clk = "pll_d_out0";
-                    nvidia,out-xres = <1200>;
-                    nvidia,out-yres = <1920>;
-                };
-                display-timings {
-                    1200x1920-32 {
-                        clock-frequency = <155774400>;
-                        hactive = <1200>;
-                        vactive = <1920>;
-                        hfront-porch = <64>;
-                        hback-porch = <54>;
-                        hsync-len = <10>;
-                        vfront-porch = <3>;
-                        vback-porch = <30>;
-                        vsync-len = <2>;
-                        nvidia,h-ref-to-sync = <4>;
-                        nvidia,v-ref-to-sync = <1>;
-                    };
-                };
-                smartdimmer {
-                    status = "okay";
-                    nvidia,bl-device-name = "pwm-backlight";
-                };
+                nvidia,bl-device-name = "pwm-backlight";
             };
         };
-        mailbox: nvavp@60001000 {
-            compatible = "nvidia,tegra114-nvavp";
-            interrupts = <0 4 0x04>; /* mailbox AVP IRQ */
-            reg = <0x60001000 0x0000e200>;
-        };
+    };
+    mailbox: nvavp@60001000 {
+        compatible = "nvidia,tegra114-nvavp";
+        interrupts = <0 4 0x04>; /* mailbox AVP IRQ */
+        reg = <0x60001000 0x0000e200>;
+    };
     };
     backlight {
         panel-a-wuxga-8-0-bl {
@@ -157,7 +158,7 @@
             compatible = "a,wuxga-8-0-bl";
         };
     };
-
+    
     i2c@7000c400 {
         battery-gauge@0b {
             onsemi,kernel-threshold-soc = <2>;
@@ -211,59 +212,73 @@
     };
     
     /* HDMI DDC */
-    hdmi_ddc: i2c@7000c700 {
-        clock-frequency = <100000>;
-    };
+hdmi_ddc: i2c@7000c700 {
+    clock-frequency = <100000>;
+};
     
     i2c@7000d000 {
-        palmas: tps65913 {
-            compatible = "ti,tps65913", "ti,palmas";
-            gpadc {
-                ti,auto-conversion-period-ms = <500>;
-                auto_conv0 {
-                    ti,adc-channel-number = <3>;
-                    ti,adc-low-threshold = <1980>;
-                    ti,enable-shutdown;
-                };
+    palmas: tps65913 {
+        compatible = "ti,tps65913", "ti,palmas";
+        gpadc {
+            ti,auto-conversion-period-ms = <500>;
+            auto_conv0 {
+                ti,adc-channel-number = <3>;
+                ti,adc-low-threshold = <1980>;
+                ti,enable-shutdown;
             };
+        };
         
-            pmic {
-                compatible = "ti,palmas-pmic";
-                regulators {
-                    ldo3 {
-                        regulator-min-microvolt = <3300000>;
-                        regulator-max-microvolt = <3300000>;
-                        regulator-enable-ramp-delay = <3000>;
-                        ti,disable-pull-down;
-                    };
+        pmic {
+            compatible = "ti,palmas-pmic";
+            regulators {
+                ldo3 {
+                    regulator-min-microvolt = <3300000>;
+                    regulator-max-microvolt = <3300000>;
+                    regulator-enable-ramp-delay = <3000>;
+                    ti,disable-pull-down;
                 };
             };
         };
     };
-
-    spi0: spi@7000d400 {
-        spi-touch@9 {
-            compatible = "raydium,rm_ts_spidev";
-            reg = <9>; /* spi chip select 9 */
-            spi-max-frequency = <12000000>;
-            interrupt-parent = <&gpio>;
-            interrupts = <82 0x01>; /* GPIO_PK2 */
-            reset-gpio = <&gpio 84 0>; /* GPIO_PK4 */
-            config = <0>;
-            platform-id = <0x8>;
-            name-of-clock = "clk_out_2";
-            name-of-clock-con = "extern2";
-        };
     };
     
+spi0: spi@7000d400 {
+    spi-touch@9 {
+        compatible = "raydium,rm_ts_spidev";
+        reg = <9>; /* spi chip select 9 */
+        spi-max-frequency = <12000000>;
+        interrupt-parent = <&gpio>;
+        interrupts = <82 0x01>; /* GPIO_PK2 */
+        reset-gpio = <&gpio 84 0>; /* GPIO_PK4 */
+        config = <0>;
+        platform-id = <0x8>;
+        name-of-clock = "clk_out_2";
+        name-of-clock-con = "extern2";
+    };
+};
+    
+    usb@7d000000 {
+        dr_mode = "otg";
+    };
+    
+phy1: usb-phy@7d000000 {
+    dr_mode = "otg";
+};
     usb@7d004000 {
         dr_mode = "otg";
     };
-
-    phy2: usb-phy@7d004000 {
+    
+phy2: usb-phy@7d004000 {
+    dr_mode = "otg";
+};
+    usb@7d008000 {
         dr_mode = "otg";
     };
-
+    
+phy3: usb-phy@7d008000 {
+    dr_mode = "otg";
+};
+    
     psy_extcon {
         power-supply,y-cable-extcon-dev = "tegra-otg";
     };
