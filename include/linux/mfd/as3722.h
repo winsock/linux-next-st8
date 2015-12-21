@@ -339,6 +339,7 @@
 #define AS3722_WATCHDOG_TIMER_MAX			0x7F
 #define AS3722_WATCHDOG_ON				BIT(0)
 #define AS3722_WATCHDOG_SW_SIG				BIT(0)
+#define AS3722_WATCHDOG_MODE_MASK			0x06
 
 #define AS3722_EXT_CONTROL_ENABLE1			0x1
 #define AS3722_EXT_CONTROL_ENABLE2			0x2
@@ -348,81 +349,81 @@
 
 /* Interrupt IDs */
 enum as3722_irq {
-	AS3722_IRQ_LID,
-	AS3722_IRQ_ACOK,
-	AS3722_IRQ_ENABLE1,
-	AS3722_IRQ_OCCUR_ALARM_SD0,
-	AS3722_IRQ_ONKEY_LONG_PRESS,
-	AS3722_IRQ_ONKEY,
-	AS3722_IRQ_OVTMP,
-	AS3722_IRQ_LOWBAT,
-	AS3722_IRQ_SD0_LV,
-	AS3722_IRQ_SD1_LV,
-	AS3722_IRQ_SD2_LV,
-	AS3722_IRQ_PWM1_OV_PROT,
-	AS3722_IRQ_PWM2_OV_PROT,
-	AS3722_IRQ_ENABLE2,
-	AS3722_IRQ_SD6_LV,
-	AS3722_IRQ_RTC_REP,
-	AS3722_IRQ_RTC_ALARM,
-	AS3722_IRQ_GPIO1,
-	AS3722_IRQ_GPIO2,
-	AS3722_IRQ_GPIO3,
-	AS3722_IRQ_GPIO4,
-	AS3722_IRQ_GPIO5,
-	AS3722_IRQ_WATCHDOG,
-	AS3722_IRQ_ENABLE3,
-	AS3722_IRQ_TEMP_SD0_SHUTDOWN,
-	AS3722_IRQ_TEMP_SD1_SHUTDOWN,
-	AS3722_IRQ_TEMP_SD2_SHUTDOWN,
-	AS3722_IRQ_TEMP_SD0_ALARM,
-	AS3722_IRQ_TEMP_SD1_ALARM,
-	AS3722_IRQ_TEMP_SD6_ALARM,
-	AS3722_IRQ_OCCUR_ALARM_SD6,
-	AS3722_IRQ_ADC,
-	AS3722_IRQ_MAX,
+    AS3722_IRQ_LID,
+    AS3722_IRQ_ACOK,
+    AS3722_IRQ_ENABLE1,
+    AS3722_IRQ_OCCUR_ALARM_SD0,
+    AS3722_IRQ_ONKEY_LONG_PRESS,
+    AS3722_IRQ_ONKEY,
+    AS3722_IRQ_OVTMP,
+    AS3722_IRQ_LOWBAT,
+    AS3722_IRQ_SD0_LV,
+    AS3722_IRQ_SD1_LV,
+    AS3722_IRQ_SD2_LV,
+    AS3722_IRQ_PWM1_OV_PROT,
+    AS3722_IRQ_PWM2_OV_PROT,
+    AS3722_IRQ_ENABLE2,
+    AS3722_IRQ_SD6_LV,
+    AS3722_IRQ_RTC_REP,
+    AS3722_IRQ_RTC_ALARM,
+    AS3722_IRQ_GPIO1,
+    AS3722_IRQ_GPIO2,
+    AS3722_IRQ_GPIO3,
+    AS3722_IRQ_GPIO4,
+    AS3722_IRQ_GPIO5,
+    AS3722_IRQ_WATCHDOG,
+    AS3722_IRQ_ENABLE3,
+    AS3722_IRQ_TEMP_SD0_SHUTDOWN,
+    AS3722_IRQ_TEMP_SD1_SHUTDOWN,
+    AS3722_IRQ_TEMP_SD2_SHUTDOWN,
+    AS3722_IRQ_TEMP_SD0_ALARM,
+    AS3722_IRQ_TEMP_SD1_ALARM,
+    AS3722_IRQ_TEMP_SD6_ALARM,
+    AS3722_IRQ_OCCUR_ALARM_SD6,
+    AS3722_IRQ_ADC,
+    AS3722_IRQ_MAX,
 };
 
 struct as3722 {
-	struct device *dev;
-	struct regmap *regmap;
-	int chip_irq;
-	unsigned long irq_flags;
-	bool en_intern_int_pullup;
-	bool en_intern_i2c_pullup;
-	struct regmap_irq_chip_data *irq_data;
+    struct device *dev;
+    struct regmap *regmap;
+    int chip_irq;
+    unsigned long irq_flags;
+    bool en_intern_int_pullup;
+    bool en_intern_i2c_pullup;
+    struct regmap_irq_chip_data *irq_data;
 };
 
 static inline int as3722_read(struct as3722 *as3722, u32 reg, u32 *dest)
 {
-	return regmap_read(as3722->regmap, reg, dest);
+    return regmap_read(as3722->regmap, reg, dest);
 }
 
 static inline int as3722_write(struct as3722 *as3722, u32 reg, u32 value)
 {
-	return regmap_write(as3722->regmap, reg, value);
+    return regmap_write(as3722->regmap, reg, value);
 }
 
 static inline int as3722_block_read(struct as3722 *as3722, u32 reg,
-		int count, u8 *buf)
+                                    int count, u8 *buf)
 {
-	return regmap_bulk_read(as3722->regmap, reg, buf, count);
+    return regmap_bulk_read(as3722->regmap, reg, buf, count);
 }
 
 static inline int as3722_block_write(struct as3722 *as3722, u32 reg,
-		int count, u8 *data)
+                                     int count, u8 *data)
 {
-	return regmap_bulk_write(as3722->regmap, reg, data, count);
+    return regmap_bulk_write(as3722->regmap, reg, data, count);
 }
 
 static inline int as3722_update_bits(struct as3722 *as3722, u32 reg,
-		u32 mask, u8 val)
+                                     u32 mask, u8 val)
 {
-	return regmap_update_bits(as3722->regmap, reg, mask, val);
+    return regmap_update_bits(as3722->regmap, reg, mask, val);
 }
 
 static inline int as3722_irq_get_virq(struct as3722 *as3722, int irq)
 {
-	return regmap_irq_get_virq(as3722->irq_data, irq);
+    return regmap_irq_get_virq(as3722->irq_data, irq);
 }
 #endif /* __LINUX_MFD_AS3722_H__ */
