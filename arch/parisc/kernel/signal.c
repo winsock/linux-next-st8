@@ -436,14 +436,15 @@ handle_signal(struct ksignal *ksig, struct pt_regs *regs, int in_syscall)
 }
 
 /*
- * Check the delay branch in userspace how the syscall number gets loaded into
- * %r20 and adjust as needed.
+ * Check how the syscall number gets loaded into %r20 within
+ * the delay branch in userspace and adjust as needed.
  */
 
 static void check_syscallno_in_delay_branch(struct pt_regs *regs)
 {
-	unsigned int opcode, source_reg;
+	u32 opcode, source_reg;
 	u32 __user *uaddr;
+	int err;
 
 	/* Usually we don't have to restore %r20 (the system call number)
 	 * because it gets loaded in the delay slot of the branch external
@@ -459,8 +460,10 @@ static void check_syscallno_in_delay_branch(struct pt_regs *regs)
 	regs->gr[31] -= 8; /* delayed branching */
 
 	/* Get assembler opcode of code in delay branch */
-	uaddr = (unsigned int *) (regs->gr[31] + 1);
-	get_user(opcode, uaddr);
+	uaddr = (unsigned int *) ((regs->gr[31] & ~3) + 4);
+	err = get_user(opcode, uaddr);
+	if (err)
+		return;
 
 	/* Check if delay branch uses "ldi int,%r20" */
 	if ((opcode & 0xffff0000) == 0x34140000)
@@ -471,7 +474,7 @@ static void check_syscallno_in_delay_branch(struct pt_regs *regs)
 		return;
 
 	/* Check if delay branch uses "copy %rX,%r20" */
-	if ((opcode & 0xff00ffff) == 0x08000254) {
+	if ((opcode & 0xffe0ffff) == 0x08000254) {
 		source_reg = (opcode >> 16) & 31;
 		regs->gr[source_reg] = regs->gr[20];
 		return;

@@ -82,9 +82,18 @@ static void bot_enqueue_sense_code(struct f_uas *fu, struct usbg_cmd *cmd)
 {
 	struct bulk_cs_wrap *csw = &fu->bot_status.csw;
 	int ret;
+	u8 *sense;
 	unsigned int csw_stat;
 
 	csw_stat = cmd->csw_code;
+
+	/*
+	 * We can't send SENSE as a response. So we take ASC & ASCQ from our
+	 * sense buffer and queue it and hope the host sends a REQUEST_SENSE
+	 * command where it learns why we failed.
+	 */
+	sense = cmd->sense_iu.sense;
+
 	csw->Tag = cmd->bot_tag;
 	csw->Status = csw_stat;
 	fu->bot_status.req->context = cmd;
@@ -1079,9 +1088,9 @@ static int usbg_submit_command(struct f_uas *fu,
 	struct command_iu *cmd_iu = cmdbuf;
 	struct usbg_cmd *cmd;
 	struct usbg_tpg *tpg;
+	struct se_cmd *se_cmd;
 	struct tcm_usbg_nexus *tv_nexus;
 	u32 cmd_len;
-	int ret;
 
 	if (cmd_iu->iu_id != IU_ID_COMMAND) {
 		pr_err("Unsupported type %d\n", cmd_iu->iu_id);
@@ -1142,12 +1151,11 @@ static int usbg_submit_command(struct f_uas *fu,
 		break;
 	}
 
+	se_cmd = &cmd->se_cmd;
 	cmd->unpacked_lun = scsilun_to_int(&cmd_iu->lun);
 
 	INIT_WORK(&cmd->work, usbg_cmd_work);
-	ret = queue_work(tpg->workqueue, &cmd->work);
-	if (ret < 0)
-		goto err;
+	queue_work(tpg->workqueue, &cmd->work);
 
 	return 0;
 err:
@@ -1194,9 +1202,9 @@ static int bot_submit_command(struct f_uas *fu,
 	struct bulk_cb_wrap *cbw = cmdbuf;
 	struct usbg_cmd *cmd;
 	struct usbg_tpg *tpg;
+	struct se_cmd *se_cmd;
 	struct tcm_usbg_nexus *tv_nexus;
 	u32 cmd_len;
-	int ret;
 
 	if (cbw->Signature != cpu_to_le32(US_BULK_CB_SIGN)) {
 		pr_err("Wrong signature on CBW\n");
@@ -1234,15 +1242,14 @@ static int bot_submit_command(struct f_uas *fu,
 	}
 
 	cmd->prio_attr = TCM_SIMPLE_TAG;
+	se_cmd = &cmd->se_cmd;
 	cmd->unpacked_lun = cbw->Lun;
 	cmd->is_read = cbw->Flags & US_BULK_FLAG_IN ? 1 : 0;
 	cmd->data_len = le32_to_cpu(cbw->DataTransferLength);
 	cmd->se_cmd.tag = le32_to_cpu(cmd->bot_tag);
 
 	INIT_WORK(&cmd->work, bot_cmd_work);
-	ret = queue_work(tpg->workqueue, &cmd->work);
-	if (ret < 0)
-		goto err;
+	queue_work(tpg->workqueue, &cmd->work);
 
 	return 0;
 err:
@@ -2033,15 +2040,6 @@ static struct usb_gadget_strings *tcm_strings[] = {
 	NULL,
 };
 
-static void give_back_ep(struct usb_ep **pep)
-{
-	struct usb_ep *ep = *pep;
-
-	if (!ep)
-		return;
-	ep->driver_data = NULL;
-}
-
 static int tcm_bind(struct usb_configuration *c, struct usb_function *f)
 {
 	struct f_uas		*fu = to_f_uas(f);
@@ -2079,28 +2077,24 @@ static int tcm_bind(struct usb_configuration *c, struct usb_function *f)
 	if (!ep)
 		goto ep_fail;
 
-	ep->driver_data = fu;
 	fu->ep_in = ep;
 
 	ep = usb_ep_autoconfig_ss(gadget, &uasp_ss_bo_desc,
 			&uasp_bo_ep_comp_desc);
 	if (!ep)
 		goto ep_fail;
-	ep->driver_data = fu;
 	fu->ep_out = ep;
 
 	ep = usb_ep_autoconfig_ss(gadget, &uasp_ss_status_desc,
 			&uasp_status_in_ep_comp_desc);
 	if (!ep)
 		goto ep_fail;
-	ep->driver_data = fu;
 	fu->ep_status = ep;
 
 	ep = usb_ep_autoconfig_ss(gadget, &uasp_ss_cmd_desc,
 			&uasp_cmd_comp_desc);
 	if (!ep)
 		goto ep_fail;
-	ep->driver_data = fu;
 	fu->ep_cmd = ep;
 
 	/* Assume endpoint addresses are the same for both speeds */
@@ -2125,10 +2119,6 @@ static int tcm_bind(struct usb_configuration *c, struct usb_function *f)
 ep_fail:
 	pr_err("Can't claim all required eps\n");
 
-	give_back_ep(&fu->ep_in);
-	give_back_ep(&fu->ep_out);
-	give_back_ep(&fu->ep_status);
-	give_back_ep(&fu->ep_cmd);
 	return -ENOTSUPP;
 }
 
@@ -2300,20 +2290,19 @@ static struct usb_function_instance *tcm_alloc_inst(void)
 	struct f_tcm_opts *opts;
 	int i;
 
-	mutex_lock(&tpg_instances_lock);
-	opts = kzalloc(sizeof(*opts), GFP_KERNEL);
-	if (!opts) {
-		mutex_unlock(&tpg_instances_lock);
 
+	opts = kzalloc(sizeof(*opts), GFP_KERNEL);
+	if (!opts)
 		return ERR_PTR(-ENOMEM);
-	}
+
+	mutex_lock(&tpg_instances_lock);
 	for (i = 0; i < TPG_INSTANCES; ++i)
 		if (!tpg_instances[i].func_inst)
 			break;
 
 	if (i == TPG_INSTANCES) {
 		mutex_unlock(&tpg_instances_lock);
-
+		kfree(opts);
 		return ERR_PTR(-EBUSY);
 	}
 	tpg_instances[i].func_inst = &opts->func_inst;
