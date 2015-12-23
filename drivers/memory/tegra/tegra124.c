@@ -59,7 +59,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 	{
 		.id = 0x00,
 		.name = "ptcr",
-		.swgroup = TEGRA_SWGROUP_PTC,
+		.swgroup = TEGRA_SWGROUP_INVALID,
 	}, {
 		.id = 0x01,
 		.name = "display0a",
@@ -357,7 +357,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 	}, {
 		.id = 0x26,
 		.name = "mpcorelpr",
-		.swgroup = TEGRA_SWGROUP_MPCORELP,
+		.swgroup = TEGRA_SWGROUP_NV,
 		.la = {
 			.reg = 0x324,
 			.shift = 0,
@@ -367,7 +367,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 	}, {
 		.id = 0x27,
 		.name = "mpcorer",
-		.swgroup = TEGRA_SWGROUP_MPCORE,
+		.swgroup = TEGRA_SWGROUP_NV2,
 		.la = {
 			.reg = 0x320,
 			.shift = 0,
@@ -447,7 +447,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 	}, {
 		.id = 0x38,
 		.name = "mpcorelpw",
-		.swgroup = TEGRA_SWGROUP_MPCORELP,
+		.swgroup = TEGRA_SWGROUP_NV,
 		.la = {
 			.reg = 0x324,
 			.shift = 16,
@@ -457,7 +457,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 	}, {
 		.id = 0x39,
 		.name = "mpcorew",
-		.swgroup = TEGRA_SWGROUP_MPCORE,
+		.swgroup = TEGRA_SWGROUP_NV2,
 		.la = {
 			.reg = 0x320,
 			.shift = 16,

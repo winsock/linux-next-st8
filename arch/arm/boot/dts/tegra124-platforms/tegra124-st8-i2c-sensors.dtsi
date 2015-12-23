@@ -1,0 +1,56 @@
+#include <dt-bindings/gpio/tegra-gpio.h>
+
+/ {
+    i2c@7000c000 {
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        compatible = "nvidia,tegra124-i2c";
+        reg = <0x0 0x7000c000 0x0 0x100>;
+        interrupts = <0x0 0x26 0x4>;
+        scl-gpio = <0x7 0x14 0x0>;
+        sda-gpio = <0x7 0x15 0x0>;
+        nvidia,memory-clients = <0xe>;
+        status = "okay";
+        clock-frequency = <0x61a80>;
+        
+        mpu6515@69 {
+            compatible = "invensense,mpu6515";
+            reg = <0x69>;
+            interrupt-parent = <&gpio>;
+            interrupts = <TEGRA_GPIO(S, 0) 0x01>;
+            invensense,int_config = <0x10>;
+            invensense,level_shifter = <0x0>;
+            invensense,orientation = [ff 00 00 00 01 00 00 00 ff];
+            invensense,sec_slave_type = <0x0>;
+            invensense,key = <0x4ecc7eeb 0xf61e3522 0x340d65 0x32e99489>;
+            vlogic-supply = <&palmas_smps8>;
+            vdd-supply = <&palmas_smps9>;
+        };
+        
+        ak8963c@0d {
+            compatible = "ak,ak8963";
+            reg = <0xd>;
+            orientation = [ff 00 00 00 01 00 00 00 ff];
+            config = "mpu";
+            vid-supply = <&palmas_smps8>;
+            vdd-supply = <&palmas_smps9>;
+        };
+        
+        cm3217@10 {
+            compatible = "capella,cm3217";
+            reg = <0x10>;
+            vdd-supply = <&palmas_smps9>;
+            illuminance,resolution = "8740";
+            illuminance,max-range = "681613.7";
+            illuminance,power-consumed = "0.09";
+        };
+        
+        ltr659@23 {
+            compatible = "lite-on,ltr659";
+            reg = <0x23>;
+            threshold = <0x50>;
+            vdd-supply = <&palmas_smps9>;
+            vled-supply = <&palmas_smps8>;
+        };
+    };
+};

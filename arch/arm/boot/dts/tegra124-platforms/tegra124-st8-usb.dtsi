@@ -1,0 +1,87 @@
+#include <dt-bindings/gpio/tegra-gpio.h>
+#include "tegra124-st8-extcon.dtsi"
+
+/ {
+    aliases {
+        ehci0 = &ehci1;
+    };
+    
+    xusb@70090000 {
+        compatible = "nvidia,tegra124-xhci";
+        reg = <0x0 0x70090000 0x0 0x8000 0x0 0x70098000 0x0 0x1000 0x0 0x70099000 0x0 0x1000 0x0 0x7009f000 0x0 0x1000>;
+        interrupts = <0x0 0x27 0x4 0x0 0x28 0x4 0x0 0x31 0x4 0x0 0x61 0x4 0x0 0x15 0x4>;
+        status = "okay";
+        nvidia,gpio_ss1_sata = <0x0>;
+        nvidia,portmap = <0x101>;
+        nvidia,ss_portmap = <0x0>;
+        nvidia,lane_owner = <0x4>;
+        nvidia,ulpicap = <0x0>;
+        hvdd_usb-supply = <0x13>;
+        avdd_pll_utmip-supply = <0x8>;
+        vddio_hsic-supply = <0x14>;
+        avddio_usb-supply = <0xe>;
+    };
+    
+    udc@7d000000 {
+        compatible = "nvidia,tegra124-udc";
+        reg = <0x0 0x7d000000 0x0 0x4000>;
+        interrupts = <0 20 0x04>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
+        nvidia,id-detection-type = <1>;
+        nvidia,enable-pmu-vbus-detection;
+        nvidia,enable-aca-rid-detection;
+        extcon-cables = <&extcon_cable_xlate 0 &extcon_cable_xlate 4 &extcon_cable_xlate 5>;
+        extcon-cable-names = "vbus", "aca-rb", "aca-rc";
+        #extcon-cells = <1>;
+        status = "okay";
+    };
+    
+    otg: otg@7d000000 {
+        compatible = "nvidia,tegra124-otg";
+        reg = <0x0 0x7d000000 0x0 0x4000>;
+        interrupts = <0 20 0x04>;
+        nvidia,hc-device = <&ehci1>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS1>;
+        nvidia,port-otg;
+        nvidia,charging-supported;
+        nvidia,turn-off-vbus-in-lp0;
+        nvidia,dcp-current-limit-ma = <3000>;
+        nvidia,enable-pmu-vbus-detection;
+        nvidia,id-detection-type = <1>;
+        nvidia,enable-y-cable-detection;
+        nvidia,enable-aca-rid-detection;
+        extcon-cables = <&extcon_cable_xlate 0 &extcon_cable_xlate 1 &extcon_cable_xlate 2 &extcon_cable_xlate 3 &extcon_cable_xlate 4 &extcon_cable_xlate 5>;
+        extcon-cable-names = "vbus", "id", "aca-ra", "y-cable", "aca-rb", "aca-rc";
+        #extcon-cells = <1>;
+        status = "okay";
+    };
+    
+    ehci1: ehci@7d000000 {
+        compatible = "nvidia,tegra124-ehci";
+        reg = <0x0 0x7d000000 0x0 0x4000>;
+        interrupts = <0 20 0x04>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
+        nvidia,port-otg;
+        nvidia,has-hostpc;
+        nvidia,turn-off-vbus-on-lp0;
+        nvidia,id-detection-type = <2>;
+        nvidia,hssync-start-delay = <0>;
+        nvidia,idle-wait-delay = <17>;
+        nvidia,elastic-limit = <16>;
+        nvidia,term-range-adj = <6>;
+        nvidia,xcvr-setup = <15>;
+        nvidia,xcvr-lsfslew = <2>;
+        nvidia,xcvr-lsrslew = <2>;
+        nvidia,xcvr-use-fuses;
+        nvidia,vbus-oc-map = <4>;
+        nvidia,xcvr-setup-offset = <0>;
+        status = "disabled";
+    };
+    
+    usb-devices {
+        maxim-charger {
+            compatible = "maxim,max14675";
+            maxim,max-board-vbus-voltage-uv = <12000000>;
+        };
+    };
+};

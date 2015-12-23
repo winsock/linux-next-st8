@@ -1,0 +1,161 @@
+#include <dt-bindings/gpio/tegra-gpio.h>
+
+/ {
+    i2c@7000c400 {
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        compatible = "nvidia,tegra124-i2c";
+        reg = <0x0 0x7000c400 0x0 0x100>;
+        interrupts = <0x0 0x54 0x4>;
+        scl-gpio = <0x7 0x9d 0x0>;
+        sda-gpio = <0x7 0x9e 0x0>;
+        nvidia,memory-clients = <0xe>;
+        status = "okay";
+        clock-frequency = <0x186a0>;
+        
+        fg_max17048: battery-gauge@36 {
+            compatible = "maxim,max17048";
+            reg = <0x36>;
+            status = "disabled";
+            interrupt-parent = <&gpio>;
+            interrupts = <TEGRA_GPIO(Q, 5) 0x0>;
+            tz-name = "battery-temp";
+            alert-threshold = <0x0>;
+            one-percent-alerts = <0x1>;
+            valert-max = <0x13ec>;
+            valert-min = <0x0>;
+            vreset-threshold = <0x960>;
+            vreset-disable = <0x1>;
+            hib-threshold = <0x30>;
+            hib-active-threshold = <0x80>;
+            bits = <0x12>;
+            rcomp = <0x39>;
+            rcomp-seg = <0x200>;
+            soccheck-a = <0x77>;
+            soccheck-b = <0x79>;
+            ocvtest = <0xda90>;
+            data-tbl = <0x98 0x80 0xb3 0x50 0xb7 0x90 0xb9 0x0 0xba 0x70 0xbc 0x10 0xbc 0x50 0xbc 0xa0 0xbd 0x20 0xbe 0x30 0xbf 0x40 0xc2 0xf0 0xc4 0x20 0xc7 0xe0 0xcb 0xf0 0xd0 0x90 0x0 0x40 0x6 0x70 0xe 0x50 0x12 0x0 0x18 0xd0 0x33 0x10 0x31 0x40 0x35 0xd0 0x18 0xd0 0x19 0x0 0xb 0xf0 0xc 0x10 0xd 0x10 0x7 0x90 0x8 0x0 0x8 0x0>;
+        };
+        
+        fg_lc709203f: battery-gauge@0b {
+            compatible = "onsemi,lc709203f";
+            reg = <0xb>;
+            interrupt-parent = <&gpio>;
+            interrupts = <TEGRA_GPIO(Q, 5) 0x0>;
+            onsemi,thermistor-beta = <0xd6b>;
+            onsemi,kernel-maximum-soc = <0x63>;
+            onsemi,alert-low-rsoc = <0x0>;
+            onsemi,alert-low-voltage = <0x0>;
+            status = "okay";
+            onsemi,kernel-threshold-soc = <0x2>;
+            io-channels = <0xa 0x1>;
+            io-channel-names = "battery-current";
+        };
+        
+        fg_hpa2163: battery-charger@6b {
+            compatible = "ti,bq2419x";
+            reg = <0x6b>;
+            interrupt-parent = <&gpio>;
+            interrupts = <TEGRA_GPIO(J, 0) 0x0>;
+            
+            battery_charger: charger {
+                status = "okay";
+                regulator-name = "batt_regulator";
+                regulator-max-microamp = <0x2dc6c0>;
+                ti,watchdog-timeout = <0x28>;
+                ti,rtc-alarm-time = <0xe10>;
+                ti,auto-recharge-time = <0x708>;
+                ti,disbale-suspend-during-charging;
+                ti,charge-voltage-limit-millivolt = <0x1100>;
+                ti,charge-term-current-limit-milliamp = <0x1>;
+                ti,temp-range = <0xa 0xf 0x19 0x2d 0x32 0x3c>;
+                ti,charge-current-limit = <0x208 0x410 0xa28 0xa28 0xa28 0x208>;
+                ti,thermal-zone = "battery";
+                ti,temp-polling-time-sec = <0x5>;
+                ti,ir-comp-voltage-millivolt = <0x1>;
+                ti,ir-comp-resister-ohm = <0x46>;
+                ti,auto-recharge-time-power-off = <0xe10>;
+                ti,auto-recharge-time-suspend = <0xe10>;
+                ti,charge-thermal-voltage-limit = <0x1100 0x1100 0x1100 0x1100 0x1068 0x1068>;
+                ti,soc-range = <0x32 0x3c 0x46 0x50 0x55 0x5a 0x5f 0x65>;
+                ti,input-voltage-soc-limit = <0x1068 0x10b8 0x1108 0x1158 0x11a8 0x11f8 0x1248 0x1298>;
+                
+                consumers {
+                    
+                    c1 {
+                        regulator-consumer-supply = "usb_bat_chg";
+                        regulator-consumer-device = "tegra-udc.0";
+                    };
+                    
+                    c2 {
+                        regulator-consumer-supply = "usb_bat_chg";
+                        regulator-consumer-device = "tegra-otg";
+                    };
+                };
+            };
+            
+            usb0_vbus: vbus {
+                regulator-name = "vbus_regulator";
+                ti,otg-iusb-gpio = <0x7 &gpio TEGRA_GPIO(I, 4) 0x0>;
+                
+                consumers {
+                    
+                    c1 {
+                        regulator-consumer-supply = "usb_vbus";
+                        regulator-consumer-device = "tegra-ehci.0";
+                    };
+                    
+                    c2 {
+                        regulator-consumer-supply = "usb_vbus";
+                        regulator-consumer-device = "tegra-otg";
+                    };
+                };
+            };
+        };
+        
+        iqs253@44 {
+            compatible = "azoteq,iqs253";
+            reg = <0x44>;
+            vddhi-supply = <&palmas_smps9>;
+            vendor = "Azoteq";
+            proximity,max-range = [32 00];
+            proximity,integration-time = "16000000";
+            proximity,power-consumed = "1.67";
+            rdy-gpio = <0x7 0x55 0x1>;
+            wake-gpio = <0x7 0xb3 0x1>;
+            sar-gpio = <0x7 0x42 0x1>;
+        };
+        
+        ina3221x@40 {
+            compatible = "ti,ina3221x";
+            reg = <0x40>;
+            ti,trigger-config = <0x7203>;
+            ti,continuous-config = <0x7c07>;
+            #address-cells = <0x1>;
+            #size-cells = <0x0>;
+            #io-channel-cells = <0x1>;
+            linux,phandle = <0xa>;
+            phandle = <0xa>;
+            
+            channel@0 {
+                reg = <0x0>;
+                ti,rail-name = "VDD_BAT";
+                ti,current-warning-limit-ma = <0x1f40>;
+                ti,current-critical-limit-ma = <0x2328>;
+                ti,shunt-resistor-mohm = <0x1>;
+            };
+            
+            channel@1 {
+                reg = <0x1>;
+                ti,rail-name = "VDD_USB_5V0";
+                ti,shunt-resistor-mohm = <0xa>;
+            };
+            
+            channel@2 {
+                reg = <0x2>;
+                ti,rail-name = "VDD_SYS_MDM";
+                ti,shunt-resistor-mohm = <0x1>;
+            };
+        };
+    };
+};

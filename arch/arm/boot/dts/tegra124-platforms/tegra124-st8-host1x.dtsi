@@ -1,0 +1,151 @@
+#include <dt-bindings/display/tegra-dc.h>
+#include <dt-bindings/memory/tegra124-mc.h>
+
+#include "panel-st8.dtsi"
+
+/ {
+    host1x: host1x {
+        compatible = "nvidia,tegra124-host1x", "simple-bus";
+        wakeup-capable;
+        reg = <0x0 0x50000000 0x0 0x28000>;
+        interrupts = <0x0 0x41 0x4 0x0 0x43 0x4>;
+        iommus = <&smmu TEGRA_SWGROUP_EPP>,
+        <&smmu TEGRA_SWGROUP_HC>,
+        <&smmu TEGRA_SWGROUP_HDA>,
+        <&smmu TEGRA_SWGROUP_VDE>;
+        nvidia,memory-clients = <0x4 0x6 0x7 0x11>;
+        #address-cells = <1>;
+        #size-cells = <1>;
+        ranges = <0x53000000 0x0 0x53000000 0x6000000 0x60001000 0x0 0x60001000 0xe200>;
+        
+        // Internal DSI display controller
+        dsidc: dc@54200000 {
+            compatible = "nvidia,tegra124-dc";
+            interrupts = <0 73 0x04>;
+            reg = <0x54200000 0x40000>;
+            iommus = <&smmu TEGRA_SWGROUP_DC>,
+            <&smmu TEGRA_SWGROUP_DC12>;
+            status = "okay";
+            nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
+            nvidia,emc-clk-rate = <204000000>;
+            nvidia,cmu-enable = <1>;
+            nvidia,low-v-win = <0x2>;
+            nvidia,fb-bpp = <32>; /* bits per pixel */
+            nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
+            
+            rgb {
+                status = "disabled";
+            };
+        };
+        
+        // HDMI out display controller
+        hdmidc: dc@54240000 {
+            compatible = "nvidia,tegra124-dc";
+            reg = <0x54240000 0x40000>;
+            iommus = <&smmu TEGRA_SWGROUP_DCB>;
+            interrupts = <0 74 0x04>;
+            nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
+            nvidia,emc-clk-rate = <300000000>;
+            nvidia,cmu-enable = <1>;
+            nvidia,fb-bpp = <32>; /* bits per pixel */
+            nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
+            status = "okay";
+            
+            rgb {
+                status = "disabled";
+            };
+        };
+        
+        // Mini-HDMI external connector
+        hdmi: hdmi {
+            compatible = "nvidia,tegra124-hdmi";
+            reg = <0x54280000 0x40000>;
+            interrupts = <0x0 0x4b 0x4>;
+            status = "okay";
+            nvidia,ddc-i2c-bus = <&hdmi_ddc>;
+            nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7) 1>; /* PN7 */
+            
+            hdmi-display {
+                status = "okay";
+                compatible = "hdmi,display";
+                disp-default-out {
+                    nvidia,out-type = <TEGRA_DC_OUT_HDMI>;
+                    nvidia,out-flags = <TEGRA_DC_OUT_HOTPLUG_HIGH>;
+                    nvidia,out-parent-clk = "pll_d2";
+                    nvidia,out-max-pixclk = <3367>; /* KHZ2PICOS(297000) */
+                    nvidia,out-align = <TEGRA_DC_ALIGN_MSB>;
+                    nvidia,out-order = <TEGRA_DC_ORDER_RED_BLUE>;
+                    nvidia,out-xres = <1920>;
+                    nvidia,out-yres = <1080>;
+                };
+                tmds-config {
+                    tmds-cfg@0 {
+                        version = <1 0>;
+                        pclk = <27000000>;
+                        pll0 = <0x01003010>;
+                        pll1 = <0x00301b00>;
+                        pe-current = <0x00000000>;
+                        drive-current = <0x1C1C1C1C>;
+                        peak-current = <0x00000000>;
+                        pad-ctls0-mask = <0xfffff0ff>;
+                        pad-ctls0-setting = <0x00000400>;
+                    };
+                    tmds-cfg@1 {
+                        version = <1 0>;
+                        pclk = <74250000>;
+                        pll0 = <0x01003110>;
+                        pll1 = <0x00301500>;
+                        pe-current = <0x00000000>;
+                        drive-current = <0x23232323>;
+                        peak-current = <0x00000000>;
+                        pad-ctls0-mask = <0xfffff0ff>;
+                        pad-ctls0-setting = <0x00000400>;
+                    };
+                    tmds-cfg@2 {
+                        version = <1 0>;
+                        pclk = <148500000>;
+                        pll0 = <0x01003310>;
+                        pll1 = <0x10300F00>;
+                        pe-current = <0x00000000>;
+                        drive-current = <0x2A2C2C2A>;
+                        peak-current = <0x00000000>;
+                        pad-ctls0-mask = <0xfffff0ff>;
+                        pad-ctls0-setting = <0x00000400>;
+                    };
+                    tmds-cfg@3 {
+                        version = <1 0>;
+                        pclk = <0x7fffffff>;
+                        pll0 = <0x01003f10>;
+                        pll1 = <0x10300700>;
+                        pe-current = <0x00000000>;
+                        drive-current = <0x30323333>;
+                        peak-current = <0x10101010>;
+                        pad-ctls0-mask = <0xfffff0ff>;
+                        pad-ctls0-setting = <0x00000600>;
+                    };
+                };
+            };
+        };
+        
+        // Internal LCD display
+        dsi: dsi {
+            compatible = "nvidia,tegra124-dsi";
+            reg = <0x54300000 0x40000 0x54400000 0x40000>;
+            nvidia,dsi-controller-vs = <DSI_VS_1>;
+            status = "okay";
+            
+            panel-a-wuxga-8-0 {
+                nvidia,dsi-boardinfo = <1761 0 0 1>;
+                nvidia,panel-rst-gpio = <&gpio TEGRA_GPIO(N, 4) 0>; /* PN4 */
+                nvidia,panel-bl-pwm-gpio = <&gpio TEGRA_GPIO(H, 1) 0>; /* PH1 */
+                disp-default-out {
+                    nvidia,out-rotation = <180>;
+                    nvidia,out-flags = <TEGRA_DC_OUT_CONTINUOUS_MODE TEGRA_DC_OUT_INITIALIZED_MODE>;
+                };
+                smartdimmer {
+                    status = "disabled";
+                };
+            };
+        };
+    };
+};

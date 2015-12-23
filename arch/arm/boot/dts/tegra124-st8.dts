@@ -2,48 +2,167 @@
 
 #include <dt-bindings/input/input.h>
 #include "tegra124.dtsi"
+#include "tegra124-platforms/tegra124-st8-fixed-a03.dtsi"
+// Embedded Memory Controller timings. Taken from the Android tree, memory timings should be just memory timings right?
+#include "tegra124-platforms/tegra124-st8-emc-a00.dtsi"
+// Basic keys (Power, Vol+/-, Lid, "Tablet Mode")
+#include "tegra124-platforms/tegra124-st8-keys-a03.dtsi"
+// GPIO
+#include "tegra124-platforms/tegra124-st8-gpio.dtsi"
+// Pinmux
+#include "tegra124-platforms/tegra124-st8-pinmux.dtsi"
+// I2C Sensors, Battery Management, Palmas Regulator, and misc I2C lanes.
+#include "tegra124-platforms/tegra124-st8-i2c.dtsi"
+// SPI Buses
+#include "tegra124-platforms/tegra124-st8-spi.dtsi"
+// Clocks, Timers, and Real Time Clocks
+#include "tegra124-platforms/tegra124-st8-clocks-timers-rtc.dtsi"
+// The host1x bus; it's the video bus controlling the display controllers and their outputs
+#include "tegra124-platforms/tegra124-st8-host1x.dtsi"
+// USB Stuff, controllers, extcon, etc.
+#include "tegra124-platforms/tegra124-st8-usb.dtsi"
+
+// Basic device tree skeleton.
+/include/ "skeleton.dtsi"
+
+/*
+ * Notes:
+ *  SDHCI2 = external microsd slot or is it 3? Confirm this.
+ *      - regulator@2?
+ *  dc@0 I'm 99% sure is the lcd diplay controller
+ *      - regulator@3?
+ *      - Backlight regulator@1?
+ *  dc@1 I'm 99% sure is the hdmi diplay controller
+ *      - regulator@5 and regulator@6?
+ * SW Name Mapping See page 27 of TRM
+ * Interrupt mapping see page 30 of TRM
+ * Does the K1 4+1 also have a 64bit memory controller?
+ */
 
 / {
 	model = "NVIDIA SHIELD Tablet";
-	compatible = "nvidia,st8", "nvidia,tegra124";
-
+	compatible = "nvidia,st8", "nvidia,tn8", "nvidia,ardbeg", "nvidia,tegra124";
+    interrupt-parent = <1>;
+    #address-cells = <2>;
+    #size-cells = <2>;
+    nvidia,boardids = "1761:1270:4";
+    
 	aliases {
-		rtc0 = "/i2c@0,7000d000/pmic@40";
-		rtc1 = "/rtc@0,7000e000";
+		rtc0 = &palmas_rtc;
+		rtc1 = &rtc1;
+        display0 = &dsi;
+        display1 = &hdmi;
 	};
 
 	chosen {
-		bootargs = "console=tty1 gpt fbcon=rotate:2 earlyprintk clk_ignore_unused";
-		linux,initrd-start = <0x81680000>;
-		linux,initrd-end = <0x82800000>;
+		bootargs = "tegraid=40.0.0.00.00 vmalloc=256M console=ttyS0,115200n8 gpt fbcon=rotate:2 video=simplefb earlyprintk clk_ignore_unused";
+		linux,initrd-start = <0x85000000>; // Gnurou had 0x81680000, according to the decompiled DTB from a recovery image that isn't correct
+		linux,initrd-end = <0x851bc400>; // Gnurou had 0x82800000
+        stdout-path = &framebuffer0;
 	};
+    
+    framebuffer0: framebuffer@ad012000 {
+        compatible = "simple-framebuffer";
+        reg = <0x0 0xad012000 0x0 (1216 * 1920 * 4)>;
+        width = <1200>;
+        height = <1920>;
+        stride = <(1216 * 4)>;
+        format = "a8b8g8r8";
+        display = <&dsidc>;
+    };
 
 	memory {
-		reg = <0x0 0x80000000 0x0 0x2d000000
-		       0x0 0xae000000 0x0 0x30000000>;
-	};
+        device_type = "memory";
+        // K1 0x8000000 - 0x27FFFFFFF (8GiB)
+        // 0x80000000 = 2GiB, K1 External memory base stats at the 2GiB mark
+        // This means 0x80000000 - 0xFFFFFFFF is the LPDDR3 right?
+        reg = <0x0 0x80000000 0x0 0x80000000>;
+    };
+    
+    smmu: iommu {
+        compatible = "nvidia,tegra124-smmu";
+        reg = <0x0 0x70019000 0x0 0x1000
+            0x0 0x6000c000 0x0 0x1000>;
+        #asids = <128>;
+        dma-window = <0x0 0x80000000 0x0 0x7ff00000>;
+        #iommu-cells = <1>;
+        swgid-mask = <0x1 0xfffecdcf>;
+        #num-translation-enable = <4>;
+        #num-asid-security = <8>;
+        
+        domains = <
+            &ppcs_as TEGRA_SWGROUP_CELLS(PPCS)
+            &ppcs_as TEGRA_SWGROUP_CELLS(PPCS1)
+            &gpu_as TEGRA_SWGROUP_CELLS(GPUB)
+            &dc_as TEGRA_SWGROUP_CELLS2(DC, DC12)
+            &dc_as TEGRA_SWGROUP_CELLS(DCB)
+            &common_as TEGRA_SWGROUP_CELLS(AFI)
+            &common_as TEGRA_SWGROUP_CELLS(SDMMC1A)
+            &common_as TEGRA_SWGROUP_CELLS(SDMMC2A)
+            &common_as TEGRA_SWGROUP_CELLS(SDMMC3A)
+            &common_as TEGRA_SWGROUP_CELLS(SDMMC4A)
+            &common_as 0xFFFFFFFF 0xFFFFFFFF>;
+        
+        address-space-prop {
+            common_as: common {
+                iova-start = <0x0 0x80000000>;
+                iova-size = <0x0 0x7FF00000>;
+                num-pf-page = <0>;
+                gap-page = <1>;
+            };
+            ppcs_as: ppcs {
+                iova-start = <0x0 0x80000000>;
+                iova-size = <0x0 0x7FF00000>;
+                num-pf-page = <1>;
+                gap-page = <1>;
+            };
+            dc_as: dc {
+                iova-start = <0x0 0x00010000>;
+                iova-size = <0x0 0xFFFEFFFF>;
+                num-pf-page = <0>;
+                gap-page = <0>;
+            };
+            gpu_as: gpu {
+                iova-start = <0x0 0x00100000>;
+                iova-size = <0x0 0xFFEFFFFF>;
+                alignment = <0x20000>;
+                num-pf-page = <0>;
+                gap-page = <0>;
+            };
+        };
+    };
+    
+    sdhci@700b0600 {
+        compatible = "nvidia,tegra124-sdhci";
+        reg = <0x0 0x700b0600 0x0 0x200>;
+        interrupts = < 0 31 0x04 >;
+        iommus = <&smmu TEGRA_SWGROUP_SDMMC4A>;
+        status = "okay";
+    };
 
-	clocks {
-		compatible = "simple-bus";
-		#address-cells = <1>;
-		#size-cells = <0>;
+    sdhci@700b0400 {
+        compatible = "nvidia,tegra124-sdhci";
+        reg = <0x0 0x700b0400 0x0 0x200>;
+        interrupts = < 0 19 0x04 >;
+        iommus = <&smmu TEGRA_SWGROUP_SDMMC3A>;
+        status = "okay";
+    };
 
-		clk32k_in: clock@0 {
-			compatible = "fixed-clock";
-			reg = <0>;
-			#clock-cells = <0>;
-			clock-frequency = <32768>;
-		};
-	};
+    sdhci@700b0200 {
+        compatible = "nvidia,tegra124-sdhci";
+        reg = <0x0 0x700b0200 0x0 0x200>;
+        interrupts = < 0 15 0x04 >;
+        iommus = <&smmu TEGRA_SWGROUP_SDMMC2A>;
+        status = "okay";
+    };
 
-	framebuffer {
-		compatible = "simple-framebuffer";
-		reg = <0x0 0xad012000 0x0 (1216 * 1920 * 4)>;
-		width = <1200>;
-		height = <1920>;
-		stride = <(1216 * 4)>;
-		format = "a8b8g8r8";
-	};
+    sdhci@700b0000 {
+        compatible = "nvidia,tegra124-sdhci";
+        reg = <0x0 0x700b0000 0x0 0x200>;
+        interrupts = < 0 14 0x04 >;
+        iommus = <&smmu TEGRA_SWGROUP_SDMMC1A>;
+        status = "okay";
+    };
 };
 
 

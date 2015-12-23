@@ -1,0 +1,71 @@
+/ {
+    // RM31050A at address 0 of this bus?
+    spi@7000d400 {
+        compatible = "nvidia,tegra114-spi";
+        reg = <0x0 0x7000d400 0x0 0x200>;
+        interrupts = <0x0 0x3b 0x4>;
+        nvidia,dma-request-selector = <0x6 0xf>;
+        nvidia,memory-clients = <0xe>;
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        status = "okay";
+        spi-max-frequency = <0x17d7840>;
+    };
+    
+    spi@7000d600 {
+        compatible = "nvidia,tegra114-spi";
+        reg = <0x0 0x7000d600 0x0 0x200>;
+        interrupts = <0x0 0x52 0x4>;
+        nvidia,dma-request-selector = <0x6 0x10>;
+        nvidia,memory-clients = <0xe>;
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        status = "disabled";
+    };
+    
+    spi@7000d800 {
+        compatible = "nvidia,tegra114-spi";
+        reg = <0x0 0x7000d800 0x0 0x200>;
+        interrupts = <0x0 0x53 0x4>;
+        nvidia,dma-request-selector = <0x6 0x11>;
+        nvidia,memory-clients = <0xe>;
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        status = "disabled";
+    };
+    
+    // Something is on this bus, Doesn't the TPS65913(Palmas) have a SPI interface as well?
+    spi@7000da00 {
+        compatible = "nvidia,tegra114-spi";
+        reg = <0x0 0x7000da00 0x0 0x200>;
+        interrupts = <0x0 0x5d 0x4>;
+        nvidia,dma-request-selector = <0x6 0x12>;
+        nvidia,memory-clients = <0xe>;
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        status = "okay";
+        spi-max-frequency = <0x17d7840>;
+    };
+    
+    spi@7000dc00 {
+        compatible = "nvidia,tegra114-spi";
+        reg = <0x0 0x7000dc00 0x0 0x200>;
+        interrupts = <0x0 0x5e 0x4>;
+        nvidia,dma-request-selector = <0x6 0x1b>;
+        nvidia,memory-clients = <0xe>;
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        status = "disabled";
+    };
+    
+    spi@7000de00 {
+        compatible = "nvidia,tegra114-spi";
+        reg = <0x0 0x7000de00 0x0 0x200>;
+        interrupts = <0x0 0x4f 0x4>;
+        nvidia,dma-request-selector = <0x6 0x1c>;
+        nvidia,memory-clients = <0xe>;
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+        status = "disabled";
+    };
+};
