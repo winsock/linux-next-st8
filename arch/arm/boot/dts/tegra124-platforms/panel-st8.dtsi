@@ -21,8 +21,8 @@
 #include <dt-bindings/display/tegra-panel.h>
 
 / {
-	host1x {
-		dsi {
+	host1x: host1x@0,50000000 {
+		dsi: dsi@0,54300000 {
 			panel-a-wuxga-8-0 {
 				status = "disabled";
 				compatible = "a,wuxga-8-0";

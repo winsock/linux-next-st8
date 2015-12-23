@@ -6,7 +6,7 @@
         ehci0 = &ehci1;
     };
     
-    xusb@70090000 {
+    xusb@0,70090000 {
         compatible = "nvidia,tegra124-xhci";
         reg = <0x0 0x70090000 0x0 0x8000 0x0 0x70098000 0x0 0x1000 0x0 0x70099000 0x0 0x1000 0x0 0x7009f000 0x0 0x1000>;
         interrupts = <0x0 0x27 0x4 0x0 0x28 0x4 0x0 0x31 0x4 0x0 0x61 0x4 0x0 0x15 0x4>;
@@ -22,7 +22,7 @@
         avddio_usb-supply = <0xe>;
     };
     
-    udc@7d000000 {
+    udc@0,7d000000 {
         compatible = "nvidia,tegra124-udc";
         reg = <0x0 0x7d000000 0x0 0x4000>;
         interrupts = <0 20 0x04>;
@@ -36,7 +36,7 @@
         status = "okay";
     };
     
-    otg: otg@7d000000 {
+    otg: otg@0,7d000000 {
         compatible = "nvidia,tegra124-otg";
         reg = <0x0 0x7d000000 0x0 0x4000>;
         interrupts = <0 20 0x04>;
@@ -56,7 +56,7 @@
         status = "okay";
     };
     
-    ehci1: ehci@7d000000 {
+    ehci1: ehci@0,7d000000 {
         compatible = "nvidia,tegra124-ehci";
         reg = <0x0 0x7d000000 0x0 0x4000>;
         interrupts = <0 20 0x04>;

@@ -3,8 +3,8 @@
 #include "tegra124-st8-i2c-palmas_tps65913.dtsi"
 
 / {
-    // eMMC I2C?
-    i2c@7000c500 {
+    // eMMC I2C? DSI DDC?
+    i2c@0,7000c500 {
         #address-cells = <0x1>;
         #size-cells = <0x0>;
         compatible = "nvidia,tegra124-i2c";
@@ -18,7 +18,7 @@
     };
 
     // HDMI DDC
-    hdmi_ddc: i2c@7000c700 {
+    hdmi_ddc: i2c@0,7000c700 {
         #address-cells = <0x1>;
         #size-cells = <0x0>;
         compatible = "nvidia,tegra124-i2c";
@@ -31,7 +31,7 @@
         clock-frequency = <0x186a0>;
     };
 
-    i2c@7000d100 {
+    i2c@0,7000d100 {
         #address-cells = <0x1>;
         #size-cells = <0x0>;
         compatible = "nvidia,tegra124-i2c";

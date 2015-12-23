@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 / {
-emc@7001b000 {
+emc@0,7001b000 {
 		compatible = "nvidia,tegra12-emc";
 		reg = <0x0 0x7001b000 0x0 0x800>;
 		#address-cells = <1>;

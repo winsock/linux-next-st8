@@ -86,6 +86,7 @@
 			regulator-max-microvolt = <1800000>;
 			gpio = <&palmas_gpio 6 0>;
 			enable-active-high;
+            regulator-boot-on;
 			vin-supply = <&palmas_smps8>;
 
 			consumers {
@@ -145,6 +146,9 @@
 					regulator-consumer-supply = "vdd_i2c";
 					regulator-consumer-device = "2-000c";
 				};
+                c10 {
+                    regulator-consumer-supply = "pwrdet_cam";
+                };
 				c11 {
 					regulator-consumer-supply = "vi2c";
 					regulator-consumer-device = "2-0030";

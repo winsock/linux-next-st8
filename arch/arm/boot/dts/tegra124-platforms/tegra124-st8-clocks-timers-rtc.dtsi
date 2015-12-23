@@ -21,7 +21,7 @@
         status = "okay";
     };
     
-    timer@60005000 {
+    timer@0,60005000 {
         compatible = "nvidia,tegra-nvtimer";
         reg = <0x0 0x60005000 0x0 0x400>;
         interrupts =   <0x0 0x0  0x4
@@ -39,13 +39,13 @@
         status = "okay";
     };
     
-    timer {
+    timer@0,60005000 {
         compatible = "arm,armv7-timer";
         interrupts =   <0x1 0xd 0xf04
                         0x1 0xe 0xf04>;
     };
     
-    dfll@70110000 {
+    dfll@0,70110000 {
         compatible = "nvidia,tegra124-dfll";
         reg = <0x0 0x70110000 0x0 0x400>;
         out-clock-name = "dfll_cpu";
@@ -54,7 +54,7 @@
         i2c-pmic-integration = <0x16>;
     };
     
-    rtc1: rtc {
+    rtc1: rtc@0,7000e000 {
         compatible = "nvidia,tegra-rtc";
         reg = <0x0 0x7000e000 0x0 0x100>;
         interrupts = <0x0 0x2 0x4>;
@@ -62,7 +62,7 @@
         status = "okay";
     };
     
-    wdt0: watchdog@60005100 {
+    wdt0: watchdog@0,60005100 {
         compatible = "nvidia,tegra-wdt";
         reg = <0x0 0x60005100 0x0 0x20 0x0 0x60005070 0x0 0x8>;
         interrupts = <0 123 0x04>;

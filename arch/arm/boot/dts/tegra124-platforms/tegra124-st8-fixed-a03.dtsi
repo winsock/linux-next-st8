@@ -30,6 +30,7 @@
 			gpio = <&palmas_gpio 2 0>;
 			enable-active-high;
 			vin-supply = <&ldousb_reg>;
+            regulator-disable-parent-after-enable;
 
 			consumers {
 							c1 {

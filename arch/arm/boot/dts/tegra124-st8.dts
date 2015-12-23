@@ -41,7 +41,7 @@
 
 / {
 	model = "NVIDIA SHIELD Tablet";
-	compatible = "nvidia,st8", "nvidia,tn8", "nvidia,ardbeg", "nvidia,tegra124";
+	compatible = "nvidia,st8", "nvidia,tegra124";
     interrupt-parent = <1>;
     #address-cells = <2>;
     #size-cells = <2>;
@@ -55,21 +55,10 @@
 	};
 
 	chosen {
-		bootargs = "tegraid=40.0.0.00.00 vmalloc=256M console=ttyS0,115200n8 gpt fbcon=rotate:2 video=simplefb earlyprintk clk_ignore_unused";
+		bootargs = "tegraid=40.0.0.00.00 vmalloc=256M console=tty1 gpt fbcon=rotate:2 video=simplefb earlyprintk clk_ignore_unused";
 		linux,initrd-start = <0x85000000>; // Gnurou had 0x81680000, according to the decompiled DTB from a recovery image that isn't correct
 		linux,initrd-end = <0x851bc400>; // Gnurou had 0x82800000
-        stdout-path = &framebuffer0;
 	};
-    
-    framebuffer0: framebuffer@ad012000 {
-        compatible = "simple-framebuffer";
-        reg = <0x0 0xad012000 0x0 (1216 * 1920 * 4)>;
-        width = <1200>;
-        height = <1920>;
-        stride = <(1216 * 4)>;
-        format = "a8b8g8r8";
-        display = <&dsidc>;
-    };
 
 	memory {
         device_type = "memory";
@@ -131,7 +120,8 @@
             };
         };
     };
-    
+
+    // Internal eMMC?
     sdhci@700b0600 {
         compatible = "nvidia,tegra124-sdhci";
         reg = <0x0 0x700b0600 0x0 0x200>;
@@ -140,6 +130,7 @@
         status = "okay";
     };
 
+    // External µSDHC?
     sdhci@700b0400 {
         compatible = "nvidia,tegra124-sdhci";
         reg = <0x0 0x700b0400 0x0 0x200>;
@@ -148,6 +139,7 @@
         status = "okay";
     };
 
+    // It looks like something enumerates on this controller
     sdhci@700b0200 {
         compatible = "nvidia,tegra124-sdhci";
         reg = <0x0 0x700b0200 0x0 0x200>;
@@ -155,13 +147,14 @@
         iommus = <&smmu TEGRA_SWGROUP_SDMMC2A>;
         status = "okay";
     };
-
+    
+    // Disconnected?
     sdhci@700b0000 {
         compatible = "nvidia,tegra124-sdhci";
         reg = <0x0 0x700b0000 0x0 0x200>;
         interrupts = < 0 14 0x04 >;
         iommus = <&smmu TEGRA_SWGROUP_SDMMC1A>;
-        status = "okay";
+        status = "disabled";
     };
 };
 

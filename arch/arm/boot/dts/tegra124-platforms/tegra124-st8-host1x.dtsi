@@ -4,7 +4,7 @@
 #include "panel-st8.dtsi"
 
 / {
-    host1x: host1x {
+    host1x: host1x@0,50000000 {
         compatible = "nvidia,tegra124-host1x", "simple-bus";
         wakeup-capable;
         reg = <0x0 0x50000000 0x0 0x28000>;
@@ -19,7 +19,7 @@
         ranges = <0x53000000 0x0 0x53000000 0x6000000 0x60001000 0x0 0x60001000 0xe200>;
         
         // Internal DSI display controller
-        dsidc: dc@54200000 {
+        dsidc: dc@0,54200000 {
             compatible = "nvidia,tegra124-dc";
             interrupts = <0 73 0x04>;
             reg = <0x54200000 0x40000>;
@@ -32,14 +32,10 @@
             nvidia,low-v-win = <0x2>;
             nvidia,fb-bpp = <32>; /* bits per pixel */
             nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
-            
-            rgb {
-                status = "disabled";
-            };
         };
         
         // HDMI out display controller
-        hdmidc: dc@54240000 {
+        hdmidc: dc@0,54240000 {
             compatible = "nvidia,tegra124-dc";
             reg = <0x54240000 0x40000>;
             iommus = <&smmu TEGRA_SWGROUP_DCB>;
@@ -50,14 +46,10 @@
             nvidia,fb-bpp = <32>; /* bits per pixel */
             nvidia,fb-flags = <TEGRA_FB_FLIP_ON_PROBE>;
             status = "okay";
-            
-            rgb {
-                status = "disabled";
-            };
         };
         
         // Mini-HDMI external connector
-        hdmi: hdmi {
+        hdmi: hdmi@0,54280000 {
             compatible = "nvidia,tegra124-hdmi";
             reg = <0x54280000 0x40000>;
             interrupts = <0x0 0x4b 0x4>;
@@ -128,13 +120,14 @@
         };
         
         // Internal LCD display
-        dsi: dsi {
+        dsi: dsi@0,54300000 {
             compatible = "nvidia,tegra124-dsi";
             reg = <0x54300000 0x40000 0x54400000 0x40000>;
             nvidia,dsi-controller-vs = <DSI_VS_1>;
             status = "okay";
             
             panel-a-wuxga-8-0 {
+                status = "okay";
                 nvidia,dsi-boardinfo = <1761 0 0 1>;
                 nvidia,panel-rst-gpio = <&gpio TEGRA_GPIO(N, 4) 0>; /* PN4 */
                 nvidia,panel-bl-pwm-gpio = <&gpio TEGRA_GPIO(H, 1) 0>; /* PH1 */
