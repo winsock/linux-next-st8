@@ -5,13 +5,11 @@
 	gpio-keys {
 		compatible = "gpio-keys";
 
-/* Shield Tablet(K1) Doesn't have a dedicated shutter button
 		camera_focus {
 			label = "Camera Focus";
 			gpios = <&gpio TEGRA_GPIO(Q, 2) GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_CAMERA_FOCUS>;
 		};
-*/
 
 		power {
 			label = "Power";

@@ -7,24 +7,22 @@
     host1x: host1x@0,50000000 {
         compatible = "nvidia,tegra124-host1x", "simple-bus";
         wakeup-capable;
-        reg = <0x0 0x50000000 0x0 0x28000>;
-        interrupts = <0x0 0x41 0x4 0x0 0x43 0x4>;
-        iommus = <&smmu TEGRA_SWGROUP_EPP>,
-        <&smmu TEGRA_SWGROUP_HC>,
-        <&smmu TEGRA_SWGROUP_HDA>,
-        <&smmu TEGRA_SWGROUP_VDE>;
-        nvidia,memory-clients = <0x4 0x6 0x7 0x11>;
+//        reg = <0x0 0x50000000 0x0 0x28000>;
+//        interrupts = <0x0 0x41 0x4 0x0 0x43 0x4>;
+//        nvidia,memory-clients = <0x4 0x6 0x7 0x11>;
         #address-cells = <1>;
         #size-cells = <1>;
-        ranges = <0x53000000 0x0 0x53000000 0x6000000 0x60001000 0x0 0x60001000 0xe200>;
+        iommus =    <&smmu TEGRA_SWGROUP_EPP>,
+                    <&smmu TEGRA_SWGROUP_HC>,
+                    <&smmu TEGRA_SWGROUP_HDA>,
+                    <&smmu TEGRA_SWGROUP_VDE>;
+                    
+        ranges =    <0x53000000 0x0 0x53000000 0x06000000>,
+                    <0x60001000 0x0 0x60001000 0x0000e200>;
         
         // Internal DSI display controller
         dsidc: dc@0,54200000 {
             compatible = "nvidia,tegra124-dc";
-            interrupts = <0 73 0x04>;
-            reg = <0x54200000 0x40000>;
-            iommus = <&smmu TEGRA_SWGROUP_DC>,
-            <&smmu TEGRA_SWGROUP_DC12>;
             status = "okay";
             nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
             nvidia,emc-clk-rate = <204000000>;
@@ -37,9 +35,6 @@
         // HDMI out display controller
         hdmidc: dc@0,54240000 {
             compatible = "nvidia,tegra124-dc";
-            reg = <0x54240000 0x40000>;
-            iommus = <&smmu TEGRA_SWGROUP_DCB>;
-            interrupts = <0 74 0x04>;
             nvidia,dc-flags = <TEGRA_DC_FLAG_ENABLED>;
             nvidia,emc-clk-rate = <300000000>;
             nvidia,cmu-enable = <1>;
@@ -51,11 +46,9 @@
         // Mini-HDMI external connector
         hdmi: hdmi@0,54280000 {
             compatible = "nvidia,tegra124-hdmi";
-            reg = <0x54280000 0x40000>;
-            interrupts = <0x0 0x4b 0x4>;
             status = "okay";
-            nvidia,ddc-i2c-bus = <&hdmi_ddc>;
-            nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7) 1>; /* PN7 */
+            nvidia,ddc-i2c-bus = <&i2c4>;
+            nvidia,hpd-gpio = <&gpio TEGRA_GPIO(N, 7) GPIO_ACTIVE_HIGH>; /* PN7 */
             
             hdmi-display {
                 status = "okay";
@@ -122,21 +115,20 @@
         // Internal LCD display
         dsi: dsi@0,54300000 {
             compatible = "nvidia,tegra124-dsi";
-            reg = <0x54300000 0x40000 0x54400000 0x40000>;
             nvidia,dsi-controller-vs = <DSI_VS_1>;
             status = "okay";
             
             panel-a-wuxga-8-0 {
                 status = "okay";
                 nvidia,dsi-boardinfo = <1761 0 0 1>;
-                nvidia,panel-rst-gpio = <&gpio TEGRA_GPIO(N, 4) 0>; /* PN4 */
-                nvidia,panel-bl-pwm-gpio = <&gpio TEGRA_GPIO(H, 1) 0>; /* PH1 */
+                nvidia,panel-rst-gpio = <&gpio TEGRA_GPIO(N, 4) GPIO_ACTIVE_HIGH>; /* PN4 */
+                nvidia,panel-bl-pwm-gpio = <&gpio TEGRA_GPIO(H, 1) GPIO_ACTIVE_HIGH>; /* PH1 */
                 disp-default-out {
                     nvidia,out-rotation = <180>;
                     nvidia,out-flags = <TEGRA_DC_OUT_CONTINUOUS_MODE TEGRA_DC_OUT_INITIALIZED_MODE>;
                 };
                 smartdimmer {
-                    status = "disabled";
+                    status = "okay";
                 };
             };
         };

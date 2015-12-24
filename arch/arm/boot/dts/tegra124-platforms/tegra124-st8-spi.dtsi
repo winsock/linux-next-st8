@@ -1,71 +1,89 @@
 / {
     // RM31050A at address 0 of this bus?
-    spi@0,7000d400 {
+    spi0: spi@0,7000d400 {
         compatible = "nvidia,tegra114-spi";
         reg = <0x0 0x7000d400 0x0 0x200>;
-        interrupts = <0x0 0x3b 0x4>;
-        nvidia,dma-request-selector = <0x6 0xf>;
-        nvidia,memory-clients = <0xe>;
+        nvidia,dma-request-selector = <&apbdma 15>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
         #address-cells = <0x1>;
         #size-cells = <0x0>;
+        clocks = <&tegra_car 41>;
         status = "okay";
         spi-max-frequency = <0x17d7840>;
+        dmas = <&apbdma 15>, <&apbdma 15>;
+        dma-names = "rx", "tx";
+        nvidia,clk-parents = "pll_p", "clk_m";
     };
     
-    spi@0,7000d600 {
+    spi1: spi@0,7000d600 {
         compatible = "nvidia,tegra114-spi";
         reg = <0x0 0x7000d600 0x0 0x200>;
-        interrupts = <0x0 0x52 0x4>;
-        nvidia,dma-request-selector = <0x6 0x10>;
-        nvidia,memory-clients = <0xe>;
+        nvidia,dma-request-selector = <&apbdma 16>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
         #address-cells = <0x1>;
         #size-cells = <0x0>;
+        clocks = <&tegra_car 44>;
         status = "disabled";
+        dmas = <&apbdma 16>, <&apbdma 16>;
+        dma-names = "rx", "tx";
+        nvidia,clk-parents = "pll_p", "clk_m";
     };
     
-    spi@0,7000d800 {
+    spi2: spi@0,7000d800 {
         compatible = "nvidia,tegra114-spi";
         reg = <0x0 0x7000d800 0x0 0x200>;
-        interrupts = <0x0 0x53 0x4>;
-        nvidia,dma-request-selector = <0x6 0x11>;
-        nvidia,memory-clients = <0xe>;
+        nvidia,dma-request-selector = <&apbdma 17>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
         #address-cells = <0x1>;
         #size-cells = <0x0>;
+        clocks = <&tegra_car 46>;
         status = "disabled";
+        dmas = <&apbdma 17>, <&apbdma 17>;
+        dma-names = "rx", "tx";
+        nvidia,clk-parents = "pll_p", "clk_m";
     };
     
     // Something is on this bus, Doesn't the TPS65913(Palmas) have a SPI interface as well?
-    spi@0,7000da00 {
+    spi3: spi@0,7000da00 {
         compatible = "nvidia,tegra114-spi";
         reg = <0x0 0x7000da00 0x0 0x200>;
-        interrupts = <0x0 0x5d 0x4>;
-        nvidia,dma-request-selector = <0x6 0x12>;
-        nvidia,memory-clients = <0xe>;
+        nvidia,dma-request-selector = <&apbdma 18>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
         #address-cells = <0x1>;
         #size-cells = <0x0>;
+        clocks = <&tegra_car 68>;
         status = "okay";
         spi-max-frequency = <0x17d7840>;
+        dmas = <&apbdma 18>, <&apbdma 18>;
+        dma-names = "rx", "tx";
+        nvidia,clk-parents = "pll_p", "clk_m";
     };
     
-    spi@0,7000dc00 {
+    spi4: spi@0,7000dc00 {
         compatible = "nvidia,tegra114-spi";
+        nvidia,dma-request-selector = <&apbdma 27>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
         reg = <0x0 0x7000dc00 0x0 0x200>;
-        interrupts = <0x0 0x5e 0x4>;
-        nvidia,dma-request-selector = <0x6 0x1b>;
-        nvidia,memory-clients = <0xe>;
         #address-cells = <0x1>;
         #size-cells = <0x0>;
+        clocks = <&tegra_car 104>;
         status = "disabled";
+        dmas = <&apbdma 27>, <&apbdma 27>;
+        dma-names = "rx", "tx";
+        nvidia,clk-parents = "pll_p", "clk_m";
     };
     
-    spi@0,7000de00 {
+    spi5: spi@0,7000de00 {
         compatible = "nvidia,tegra114-spi";
         reg = <0x0 0x7000de00 0x0 0x200>;
-        interrupts = <0x0 0x4f 0x4>;
-        nvidia,dma-request-selector = <0x6 0x1c>;
-        nvidia,memory-clients = <0xe>;
+        nvidia,dma-request-selector = <&apbdma 28>;
+        iommus = <&smmu TEGRA_SWGROUP_PPCS>;
         #address-cells = <0x1>;
         #size-cells = <0x0>;
+        clocks = <&tegra_car 105>;
         status = "disabled";
+        dmas = <&apbdma 28>, <&apbdma 28>;
+        dma-names = "rx", "tx";
+        nvidia,clk-parents = "pll_p", "clk_m";
     };
 };

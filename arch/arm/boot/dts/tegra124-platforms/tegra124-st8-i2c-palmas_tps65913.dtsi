@@ -1,41 +1,33 @@
 #include <dt-bindings/gpio/tegra-gpio.h>
 
 / {
-    i2c@0,7000d000 {
+    i2c5: i2c@0,7000d000 {
         #address-cells = <0x1>;
         #size-cells = <0x0>;
         compatible = "nvidia,tegra124-i2c";
-        reg = <0x0 0x7000d000 0x0 0x100>;
-        interrupts = <0x0 0x35 0x4>;
-        nvidia,require-cldvfs-clock;
-        scl-gpio = <0x7 0xce 0x0>;
-        sda-gpio = <0x7 0xcf 0x0>;
-        nvidia,memory-clients = <0xe>;
         status = "okay";
-        clock-frequency = <0x61a80>;
+        nvidia,require-cldvfs-clock;
         nvidia,bit-banging-xfer-after-shutdown;
         
         palmas: tps65913 {
             compatible = "ti,palmas";
             reg = <0x58>;
-            interrupts = <0x0 0x56 0x0>;
             #interrupt-cells = <0x2>;
             interrupt-controller;
-            linux,phandle = <0xb>;
-            phandle = <0xb>;
+            
+            thermal {
+                status = "okay";
+            };
             
             palmas_gpio: gpio {
                 compatible = "ti,palmas-gpio";
                 gpio-controller;
                 #gpio-cells = <0x2>;
-                linux,phandle = <0x17>;
-                phandle = <0x17>;
             };
             
             palmas_rtc: rtc {
                 compatible = "ti,palmas-rtc";
                 interrupt-parent = <&palmas>;
-                interrupts = <0x8 0x0>;
             };
             
             pinmux {
@@ -44,9 +36,6 @@
                 pinctrl-0 = <&palmas_default>;
                 
                 palmas_default: pinmux {
-                    linux,phandle = <0xc>;
-                    phandle = <0xc>;
-                    
                     powergood {
                         pins = "powergood";
                         function = "powergood";
@@ -105,7 +94,7 @@
                 ti,ldousb-in-threshold-voltage = <0x3567e0>;
                 ti,threshold-voltage-tolerance = <0x186a0>;
                 ti,enable-in1-above-threshold;
-                ldousb-in1-supply = <&vdd_ac_bat_reg>;
+                //ldousb-in1-supply = <&vdd_ac_bat_reg>;
                 ldousb-in2-supply = <&palmas_smps10_out2>;
             };
             
@@ -120,7 +109,6 @@
                 ti,auto-conversion-period-ms = <0x1f4>;
                 
                 iio_map {
-                    
                     ch0 {
                         ti,adc-channel-number = <0x0>;
                         ti,adc-consumer-device = "1-000b";
@@ -184,7 +172,6 @@
                         ti,config-flags = <0x8>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vdd_cpu";
                             };
@@ -199,7 +186,6 @@
                         regulator-boot-on;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vdd_gpu";
                             };
@@ -210,11 +196,8 @@
                         regulator-name = "vddio-ddr";
                         regulator-always-on;
                         regulator-boot-on;
-                        linux,phandle = <0xf>;
-                        phandle = <0xf>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vddio_ddr";
                             };
@@ -242,7 +225,6 @@
                         ti,roof-floor = <0x3>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vdd_core";
                             };
@@ -253,11 +235,8 @@
                         regulator-name = "vdd-1v8";
                         regulator-always-on;
                         regulator-boot-on;
-                        linux,phandle = <0x8>;
-                        phandle = <0x8>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "dbvdd";
                                 regulator-consumer-device = "tegra-snd-rt5639.0";
@@ -387,11 +366,8 @@
                         regulator-max-microvolt = <0x325aa0>;
                         regulator-always-on;
                         regulator-boot-on;
-                        linux,phandle = <0x9>;
-                        phandle = <0x9>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vddio_sd_slot";
                                 regulator-consumer-device = "sdhci-tegra.3";
@@ -426,11 +402,8 @@
                         regulator-name = "vdd-out2-5v0";
                         regulator-min-microvolt = <0x4c4b40>;
                         regulator-max-microvolt = <0x4c4b40>;
-                        linux,phandle = <0xe>;
-                        phandle = <0xe>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "spkvdd";
                                 regulator-consumer-device = "tegra-snd-rt5639.0";
@@ -450,7 +423,6 @@
                         ti,roof-floor = <0x3>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "avdd_pll_m";
                             };
@@ -491,7 +463,6 @@
                         regulator-max-microvolt = <0x325aa0>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "avdd_lcd";
                                 regulator-consumer-device = "tegradc.0";
@@ -505,8 +476,6 @@
                         regulator-max-microvolt = <0x325aa0>;
                         regulator-enable-ramp-delay = <0xbb8>;
                         ti,disable-pull-down;
-                        linux,phandle = <0x19>;
-                        phandle = <0x19>;
                     };
                     
                     palmas_ldo4: ldo4 {
@@ -515,7 +484,6 @@
                         regulator-max-microvolt = <0x2932e0>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "avdd_ov5693";
                                 regulator-consumer-device = "2-0010";
@@ -525,11 +493,8 @@
                     
                     palmas_ldo5: ldo5 {
                         regulator-name = "avdd-dsi-csi";
-                        linux,phandle = <0x14>;
-                        phandle = <0x14>;
-                        
+
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vddio_hsic";
                                 regulator-consumer-device = "tegra-ehci.1";
@@ -575,8 +540,6 @@
                         regulator-name = "vpp-fuse";
                         regulator-min-microvolt = <0x1b7740>;
                         regulator-max-microvolt = <0x1b7740>;
-                        linux,phandle = <0x12>;
-                        phandle = <0x12>;
                     };
                     
                     palmas_ldo7: ldo7 {
@@ -585,7 +548,6 @@
                         regulator-max-microvolt = <0x2932e0>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "avdd_af1_cam";
                             };
@@ -634,7 +596,6 @@
                         regulator-boot-on;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vdd_rtc";
                             };
@@ -647,7 +608,6 @@
                         regulator-max-microvolt = <0x325aa0>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vddio_sdmmc";
                                 regulator-consumer-device = "sdhci-tegra.2";
@@ -665,7 +625,6 @@
                         regulator-boot-on;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "vddio_hv";
                                 regulator-consumer-device = "tegradc.1";
@@ -691,11 +650,8 @@
                         regulator-name = "avdd-usb";
                         regulator-always-on;
                         regulator-boot-on;
-                        linux,phandle = <0x13>;
-                        phandle = <0x13>;
                         
                         consumers {
-                            
                             c1 {
                                 regulator-consumer-supply = "pwrdet_pex_ctl";
                             };

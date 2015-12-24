@@ -24,7 +24,7 @@
 	host1x: host1x@0,50000000 {
 		dsi: dsi@0,54300000 {
 			panel-a-wuxga-8-0 {
-				status = "disabled";
+				status = "okay";
 				compatible = "a,wuxga-8-0";
 				nvidia,dsi-instance = <DSI_INSTANCE_0>;
 				nvidia,dsi-n-data-lanes = <4>;

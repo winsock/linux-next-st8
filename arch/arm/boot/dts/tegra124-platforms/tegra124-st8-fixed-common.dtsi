@@ -49,7 +49,7 @@
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
 			enable-active-high;
-			gpio = <&gpio TEGRA_GPIO(H, 2) 0>;
+			gpio = <&gpio TEGRA_GPIO(H, 2) GPIO_ACTIVE_HIGH>;
 			regulator-boot-on;
 
 			consumers {
@@ -69,6 +69,7 @@
 			gpio = <&gpio TEGRA_GPIO(R, 0) GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 			vin-supply = <&palmas_smps9>;
+            regulator-boot-on;
 
 			consumers {
 				c1 {
@@ -84,7 +85,7 @@
 			regulator-name = "vddio_dvdd_lcd";
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
-			gpio = <&palmas_gpio 6 0>;
+			gpio = <&palmas_gpio 6 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
             regulator-boot-on;
 			vin-supply = <&palmas_smps8>;
@@ -106,7 +107,7 @@
 			regulator-name = "vdd_cam_af";
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
-			gpio = <&palmas_gpio 4 0>;
+			gpio = <&palmas_gpio 4 GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 			vin-supply = <&palmas_smps8>;
 
@@ -162,7 +163,7 @@
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
 			enable-active-high;
-			gpio = <&gpio TEGRA_GPIO(N, 5) 0>;
+			gpio = <&gpio TEGRA_GPIO(N, 5) GPIO_ACTIVE_HIGH>;
 			vin-supply = <&palmas_smps6>;
 
 			consumers {
@@ -179,15 +180,15 @@
 			regulator-name = "vddio_hdmi_5v0";
 			regulator-min-microvolt = <5000000>;
 			regulator-max-microvolt = <5000000>;
-			gpio = <&gpio TEGRA_GPIO(K, 6) 0>;
+			gpio = <&gpio TEGRA_GPIO(K, 6) GPIO_ACTIVE_HIGH>;
 			enable-active-high;
 			vin-supply = <&palmas_smps10_out1>;
 
 			consumers {
-							c1 {
-								regulator-consumer-supply = "vdd_hdmi_5v0";
-								regulator-consumer-device = "tegradc.1";
-							};
+                c1 {
+                    regulator-consumer-supply = "vdd_hdmi_5v0";
+                    regulator-consumer-device = "tegradc.1";
+                };
 			};
 		};
 	};
